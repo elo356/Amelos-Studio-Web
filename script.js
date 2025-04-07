@@ -31,4 +31,4 @@ window.addEventListener("scroll", function () {
   } else {
     header.classList.remove("active");
   }
-});
+})

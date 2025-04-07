@@ -283,29 +283,37 @@
             </div>
 
             <div class="contactForm" id="contact">
-              <form> 
+              <form action="https://formspree.io/f/mvgkvadb" method="POST">
                 <h2>Send us a message</h2>
+            
+                <!-- Campo de nombre -->
                 <div class="inputBox">
-                    <input type="text" name="" required="required">
+                    <input type="text" name="name" required="required">
                     <span>Full Name</span>
                 </div>
-
+            
+                <!-- Campo de email -->
                 <div class="inputBox">
-                  <input type="text" name="" required="required">
-                  <span>Email</span>
-              </div>
-
-              <div class="inputBox">
-                <textarea required="requiered"></textarea>
-                <span>Type your message</span>
-            </div>
-
-            <div class="inputBox">
-              <input type="submit" name="" value="send">
-           
-          </div>
-
-              </form>
+                    <input type="email" name="email" required="required">
+                    <span>Email</span>
+                </div>
+            
+                <!-- Campo de mensaje -->
+                <div class="inputBox">
+                    <textarea name="message" required="required"></textarea>
+                    <span>Type your message</span>
+                </div>
+            
+                <!-- Campos ocultos (opcional) -->
+                <input type="hidden" name="_next" value="https://tu-sitio.com/gracias.html"> <!-- URL a la que redirigir después de enviar el formulario -->
+                <input type="hidden" name="_subject" value="Nuevo mensaje de formulario de contacto"> <!-- Asunto del correo recibido -->
+            
+                <!-- Botón de envío -->
+                <div class="inputBox">
+                    <input type="submit" value="Send">
+                </div>
+            </form>
+            
             </div>
         </div>
 
