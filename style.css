@@ -375,6 +375,12 @@ body {
 
   padding-block-end: var(--section-padding);
 }
+@media (min-width: 1200px) {
+  .hero {
+    background-position: bottom left, center;
+    background-size: 100% auto, cover;
+  }
+}
 
 .hero-content { margin-block-end: 50px; }
 
