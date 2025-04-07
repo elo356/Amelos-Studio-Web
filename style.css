@@ -442,16 +442,15 @@ body {
 }
 
 .service-card .card-icon {
-  background-image: url("images/service-banner-pattern.png");
-  background-repeat: no-repeat;
-  background-size: contain;
   background-color: hsla(197, 100%, 52%, 0.253);
   aspect-ratio: 1 / 1;
-  max-width: 165px;
+  max-width: 195px;
+  width: 70px;
   display: grid;
   place-content: center;
   margin-inline: auto;
   transition: var(--transition-1);
+  border-radius: 45%;
 }
 
 .service-card:hover .card-icon { background-color: var(--winter-sky); }
