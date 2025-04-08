@@ -350,6 +350,11 @@ body {
   font-weight: var(--fw-600);
   padding-block: 12px;
 }
+.navbar-link:hover{
+  font-size: 1.55rem;
+  color:hsl(211, 33%, 51%);
+  transition: 0.5s;
+}
 
 .overlay {
   position: fixed;
