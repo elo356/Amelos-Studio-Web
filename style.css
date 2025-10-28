@@ -175,15 +175,10 @@ body {
   width: 100%;
 }
 
-.copyright {
-  flex-grow: 1; /* Hace que el texto de copyright ocupe todo el espacio disponible */
-  text-align: center; /* Centra el texto */
-  margin: 0;
-}
-
 .social-icons {
   display: flex;
   align-items: center;
+  margin-right: 44%;
 }
 
 .social-icon {
@@ -691,11 +686,6 @@ resize: none;
   text-align: center;
   color: var(--white);
 }
-.copyright-link {
-  display: inline-block;
-  text-decoration: underline;
-}
-.copyright-link:is(:hover, :focus) { text-decoration: none; }
 
 /* Estilo para la lista de servicios */
 .service-list {
