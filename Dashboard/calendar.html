@@ -7,6 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <!-- Añadido: Firebase compat scripts necesarios -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     /* Estilos existentes */
 
@@ -34,13 +37,80 @@
       transform: scale(1.06);
       background: #dc2626;
     }
+
+    /* Responsive adjustments */
+    /* Off-canvas sidebar on small screens (use transform, not display:none) */
+    @media (max-width: 900px) {
+      /* start hidden off-canvas */
+      #sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 10001;
+        width: 16rem; /* same as w-64 */
+        background: #ffffff;
+        transition: transform .25s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      }
+      /* when opened or pinned, slide in */
+      #sidebar.open,
+      #sidebar.pinned {
+        transform: translateX(0);
+      }
+
+      #mainContent { margin-left: 0 !important; padding: 1rem !important; }
+      .trash { right: 12px; bottom: 84px; width: 52px; height: 52px; font-size: 22px; }
+      /* ensure the mobile tab is visible */
+      .sidebar-tab { display: flex; }
+    }
+
+    /* Sidebar tab & pin (mobile) */
+    .sidebar-tab {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #0f172a;
+      color: #fff;
+      width: 42px;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      z-index: 10002;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .sidebar-pin-btn { background: transparent; border: none; color: inherit; cursor: pointer; font-size: 18px; }
+
+    /* FullCalendar event wrapping & touch-friendly delete button */
+    .fc .fc-event-title { white-space: normal; word-break: break-word; }
+    .event-title { display: inline-block; max-width: calc(100% - 36px); }
+    .event-del-btn { padding: 6px 8px; font-size: 14px; line-height: 1; }
+
+    /* Modal simple para crear/editar eventos */
+    #eventModal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 10010; }
+    #eventModal.open { display: flex; }
+    #eventModal .modal-card { background: #fff; padding: 1rem; border-radius: 8px; width: 360px; max-width: calc(100% - 2rem); }
+    #eventModal .modal-row { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.75rem; }
+    #eventModal label { font-size: 0.9rem; color: #374151; }
+    #eventModal input[type="text"], #eventModal input[type="date"] { padding:8px; border:1px solid #e5e7eb; border-radius:6px; width:100%; }
+    #eventModal .modal-actions { display:flex; justify-content:flex-end; gap:8px; }
+    @media (max-width:420px){ #eventModal .modal-card{ width: 320px } }
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
   <!-- Sidebar -->
-  <aside class="w-64 bg-white h-screen shadow-md fixed">
-    <div class="p-6 text-2xl font-bold text-blue-600">Amelo Studio</div>
+  <aside id="sidebar" class="w-64 bg-white h-screen shadow-md fixed">
+    <div class="p-6 text-2xl font-bold text-blue-600 flex items-center justify-between">
+      <span>Amelo Studio</span>
+      <button id="sidebarPinBtn" class="sidebar-pin-btn" title="Fijar menú">📌</button>
+    </div>
     <nav class="mt-10">
       <a href="mainboard.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
       <a href="#" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
@@ -48,22 +118,127 @@
     </nav>
   </aside>
 
+  <!-- Sidebar tab: visible en móvil para abrir el menú -->
+  <button id="sidebarTab" class="sidebar-tab md:hidden" aria-label="Abrir menú">☰</button>
+
   <!-- Main content -->
-  <div class="ml-64 p-8">
+  <div id="mainContent" class="ml-64 p-8">
     <header class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-gray-700">Calendario de Pagos</h1>
+      <div class="flex items-center gap-4">
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded bg-gray-100 mobile-tap" aria-label="Abrir menú">
+          <ion-icon name="menu-outline" style="font-size:20px"></ion-icon>
+        </button>
+        <h1 class="text-3xl font-bold text-gray-700">Calendario de Pagos</h1>
+      </div>
       <button id="addPaymentBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Agregar Fecha</button>
     </header>
 
     <div id="calendar" class="bg-white p-4 rounded shadow"></div>
+
+    <!-- Modal: crear / editar evento (incluye color picker) -->
+    <div id="eventModal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
+        <h3 id="eventModalTitle" class="text-lg font-semibold mb-2">Evento</h3>
+        <form id="eventForm">
+          <div class="modal-row">
+            <label for="evtTitle">Título</label>
+            <input id="evtTitle" type="text" required />
+          </div>
+          <div class="modal-row">
+            <label for="evtDate">Fecha</label>
+            <input id="evtDate" type="date" required />
+          </div>
+          <div class="modal-row">
+            <label for="evtColor">Color (usa el selector)</label>
+            <input id="evtColor" type="color" value="#60A5FA" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="evtCancel" class="px-3 py-1 rounded bg-gray-200">Cancelar</button>
+            <button type="submit" id="evtSave" class="px-3 py-1 rounded bg-blue-600 text-white">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Papelera: arrastra aquí para eliminar evento -->
     <div id="trash" class="trash" title="Arrastra aquí para eliminar">🗑️</div>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // elementos del modal
+        const eventModal = document.getElementById('eventModal');
+        const eventForm = document.getElementById('eventForm');
+        const evtTitle = document.getElementById('evtTitle');
+        const evtDate = document.getElementById('evtDate');
+        const evtColor = document.getElementById('evtColor');
+        const evtCancel = document.getElementById('evtCancel');
+        let editingEventId = null; // null => crear nuevo
+
+        function openEventModal({ id=null, title='', date='', color='#60A5FA' } = {}) {
+          editingEventId = id;
+          evtTitle.value = title;
+          // ensure YYYY-MM-DD for date input
+          if (date) {
+            const d = new Date(date);
+            if (!isNaN(d)) {
+              const yyyy = d.getFullYear();
+              const mm = String(d.getMonth()+1).padStart(2,'0');
+              const dd = String(d.getDate()).padStart(2,'0');
+              evtDate.value = `${yyyy}-${mm}-${dd}`;
+            } else {
+              // try raw if already YYYY-MM-DD
+              evtDate.value = date;
+            }
+          } else evtDate.value = '';
+          evtColor.value = color || '#60A5FA';
+          eventModal.classList.add('open');
+          eventModal.setAttribute('aria-hidden','false');
+          evtTitle.focus();
+        }
+        function closeEventModal() {
+          editingEventId = null;
+          eventModal.classList.remove('open');
+          eventModal.setAttribute('aria-hidden','true');
+        }
+
+        evtCancel.addEventListener('click', (e)=> { e.preventDefault(); closeEventModal(); });
+
+        // submit modal: crear o editar
+        eventForm.addEventListener('submit', (e)=> {
+          e.preventDefault();
+          const title = evtTitle.value.trim();
+          const date = evtDate.value;
+          const color = evtColor.value;
+          if (!title || !date) return alert('Título y fecha son obligatorios.');
+          if (editingEventId) {
+            eventsRef.child(editingEventId).update({ title, start: date, color });
+          } else {
+            eventsRef.push({ title, start: date, color });
+          }
+          closeEventModal();
+        });
+
+        // --- Firebase init (usa tu configuración) ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyBnIUBoaMViSI2jHGPD9NoJaJrTQiL-UFU",
+          authDomain: "amelos-studio.firebaseapp.com",
+          databaseURL: "https://amelos-studio-default-rtdb.firebaseio.com",
+          projectId: "amelos-studio",
+          storageBucket: "amelos-studio.firebasestorage.app",
+          messagingSenderId: "11496902615",
+          appId: "1:11496902615:web:33ce1c36199e7c17be8592",
+          measurementId: "G-DR054GPPZF"
+        };
+        if (!window.firebase.apps?.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+        const eventsRef = db.ref('events');
+
         const calendarEl = document.getElementById('calendar');
         const trashEl = document.getElementById('trash');
 
+        // Crear calendario (sin eventos estáticos)
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           headerToolbar: {
@@ -76,12 +251,57 @@
           navLinks: true,
           selectable: true,
           editable: true,
-          // eventos con id único (necesario para eliminar correctamente)
-          events: [
-              { id: 'evt-20251115-1', title: 'Juan Pérez - Pago 15/11', start: '2025-11-15', color: '#34D399' },
-              { id: 'evt-20251120-1', title: 'María López - Pago 20/11', start: '2025-11-20', color: '#FBBF24' },
-              { id: 'evt-20251122-1', title: 'Cliente X - Pago 22/11', start: '2025-11-22', color: '#60A5FA' }
-          ],
+          // Cuando se hace click en un evento -> abrir modal para editar
+          eventClick: function(info) {
+            const id = info.event.id;
+            if (!id) return;
+            // abrir modal con datos actuales para editar
+            openEventModal({ id, title: info.event.title, date: info.event.startStr, color: info.event.backgroundColor || info.event.extendedProps.color || '#60A5FA' });
+          },
+
+          // Al arrastrar el evento a otra fecha -> actualizar start en DB
+          eventDrop: function(info) {
+            const id = info.event.id;
+            if (!id) return;
+            const newStart = info.event.startStr;
+            eventsRef.child(id).update({ start: newStart });
+          },
+
+          // Custom render: botón eliminar también elimina en la DB
+          eventContent: function(info) {
+            const container = document.createElement('div');
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'space-between';
+            container.style.gap = '8px';
+            // allow title to wrap on small widths
+            container.style.minWidth = '0';
+
+            const title = document.createElement('span');
+            title.className = 'event-title';
+            title.innerText = info.event.title;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.innerText = '✕';
+            btn.className = 'event-del-btn text-red-600 font-bold';
+            btn.style.border = 'none';
+            btn.style.background = 'transparent';
+            btn.style.cursor = 'pointer';
+
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = info.event.id;
+              if (!id) return;
+              if (confirm(`¿Eliminar evento "${info.event.title}"?`)) {
+                eventsRef.child(id).remove();
+              }
+            });
+
+            container.appendChild(title);
+            container.appendChild(btn);
+            return { domNodes: [container] };
+          },
 
           // cuando se inicia el drag de un evento, resaltamos la papelera
           eventDragStart: function(info) {
@@ -91,89 +311,103 @@
           // cuando se suelta el evento, comprobamos si fue soltado sobre la papelera
           eventDragStop: function(info) {
             if (!trashEl) return;
-            // obtener coordenadas del pointer (soporta touch y mouse)
             const jsEvent = info.jsEvent || {};
             const clientX = jsEvent.clientX || (jsEvent.touches && jsEvent.touches[0] && jsEvent.touches[0].clientX);
             const clientY = jsEvent.clientY || (jsEvent.touches && jsEvent.touches[0] && jsEvent.touches[0].clientY);
 
             const rect = trashEl.getBoundingClientRect();
-            // quitar la clase activa
             trashEl.classList.remove('active');
 
             if (typeof clientX === 'number' && typeof clientY === 'number') {
               const inside = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
               if (inside) {
-                const name = info.event.title || '';
-                if (confirm(`¿Eliminar evento "${name}"?`)) {
-                  // eliminar usando el id (más fiable)
-                  const ev = info.event.id ? calendar.getEventById(info.event.id) : null;
-                  if (ev && typeof ev.remove === 'function') {
-                    ev.remove();
-                  } else if (typeof info.event.remove === 'function') {
-                    info.event.remove();
-                  }
-                  // forzar render para evitar restos visuales
-                  calendar.render();
+                const id = info.event.id;
+                if (id && confirm(`¿Eliminar evento "${info.event.title}"?`)) {
+                  eventsRef.child(id).remove();
                 }
               }
             }
           },
 
-          // Personalizamos cómo se muestra cada evento
-          eventContent: function(info) {
-            const container = document.createElement('div');
-            container.classList.add('flex', 'justify-between', 'items-center');
-
-            const title = document.createElement('span');
-            title.innerText = info.event.title;
-
-            const btn = document.createElement('button');
-            btn.innerText = '✕';
-            btn.classList.add('ml-2', 'text-red-600', 'font-bold');
-            btn.style.border = 'none';
-            btn.style.background = 'transparent';
-            btn.style.cursor = 'pointer';
-
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation(); // evita que el click afecte al evento principal
-              if (confirm(`¿Eliminar evento "${info.event.title}"?`)) {
-                // eliminar por id cuando exista y forzar render
-                const ev = info.event.id ? calendar.getEventById(info.event.id) : null;
-                if (ev && typeof ev.remove === 'function') ev.remove();
-                else if (typeof info.event.remove === 'function') info.event.remove();
-                calendar.render();
-              }
-            });
-
-            container.appendChild(title);
-            container.appendChild(btn);
-
-            return { domNodes: [container] };
-          }
+          // ajustar header según ancho y fuerza re-render cuando cambie tamaño
+          windowResize: function() { adjustForMobile(); }
         });
 
         calendar.render();
 
-        // Agregar evento
+        // Sincronizar en tiempo real desde Firebase -> reemplazar eventos en el calendario
+        eventsRef.on('value', snapshot => {
+          calendar.getEvents().forEach(ev => ev.remove()); // limpiar
+          const data = snapshot.val();
+          if (!data) return;
+          Object.keys(data).forEach(key => {
+            const ev = data[key];
+            // asegurarse formato mínimo
+            const eventObj = {
+              id: key,
+              title: ev.title || 'Sin título',
+              start: ev.start || ev.date || ev.startStr || ev.startDate || null,
+              color: ev.color || ev.backgroundColor || undefined,
+              extendedProps: ev.extendedProps || {}
+            };
+            // FullCalendar ignora eventos sin start; verificar
+            if (eventObj.start) calendar.addEvent(eventObj);
+          });
+          // ajustar tamaño tras cargar
+          setTimeout(()=> calendar.updateSize(), 60);
+        });
+
+        // Agregar evento: abrir modal en modo "crear"
         const addBtn = document.getElementById('addPaymentBtn');
         addBtn.addEventListener('click', () => {
-          const cliente = prompt("Nombre del Cliente:");
-          if (!cliente) return;
-
-          const fecha = prompt("Fecha del pago (YYYY-MM-DD):");
-          if (!fecha) return;
-
-          const color = prompt("Color del evento (ej. #34D399) o deja vacío para default:", "#60A5FA");
-
-          // generar id único para el nuevo evento
-          const newId = 'evt-' + Date.now();
-          calendar.addEvent({
-            id: newId,
-            title: `${cliente} - Pago`,
-            start: fecha,
-            color: color || '#60A5FA'
-          });
+          openEventModal({ title: '', date: '', color: '#60A5FA' });
         });
+
+        // Ajustes responsive del calendario
+        function adjustForMobile() {
+          const w = window.innerWidth;
+          if (w <= 700) {
+            calendar.setOption('headerToolbar', { left: 'prev,next', center: 'title', right: '' });
+            calendar.setOption('initialView', 'dayGridMonth');
+          } else {
+            calendar.setOption('headerToolbar', { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' });
+          }
+          setTimeout(()=> calendar.updateSize(), 50);
+        }
+        adjustForMobile();
+        window.addEventListener('resize', adjustForMobile);
+
+        // --- mobile sidebar/tab/pin behavior (same pattern as mainboard) ---
+        (function(){
+          const mobileBtn = document.getElementById('mobileMenuBtn');
+          const sidebar = document.getElementById('sidebar');
+          const main = document.getElementById('mainContent');
+          const sidebarTab = document.getElementById('sidebarTab');
+          const sidebarPinBtn = document.getElementById('sidebarPinBtn');
+          const pinned = localStorage.getItem('sidebar_pinned') === '1';
+          if (pinned && sidebar) sidebar.classList.add('open','pinned');
+
+          if (mobileBtn && sidebar) {
+            mobileBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+            main.addEventListener('click', ()=> {
+              if (window.innerWidth <= 900 && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) {
+                sidebar.classList.remove('open');
+              }
+            });
+          }
+          if (sidebarTab && sidebar) {
+            sidebarTab.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+          }
+          if (sidebarPinBtn && sidebar) {
+            sidebarPinBtn.addEventListener('click', (e)=> {
+              e.stopPropagation();
+              const nowPinned = sidebar.classList.toggle('pinned');
+              if (nowPinned) { sidebar.classList.add('open'); localStorage.setItem('sidebar_pinned','1'); }
+              else { localStorage.removeItem('sidebar_pinned'); }
+            });
+          }
+        })();
+
       });
     </script>
 
