@@ -47,6 +47,30 @@
       .whatsapp-float { right: 14px; bottom: 14px; width: 48px; height: 48px; }
       .whatsapp-float ion-icon { font-size: 20px; }
     }
+
+    /* Nuevo: estilos para el botón de idioma */
+    .lang-btn {
+      margin-left: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: transparent; /* sin fondo cuando está arriba */
+      color: #ffffff;           /* texto blanco en la parte superior */
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .12s ease, color .12s ease, box-shadow .12s ease;
+    }
+    .lang-btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,0.08); }
+    /* Al bajar la página, el botón toma fondo blanco y texto oscuro */
+    .lang-btn.scrolled {
+      background: #ffffff;
+      color: #111;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+    @media (max-width: 700px) {
+      .lang-btn { display: none; } /* aparece dentro del menú si lo quieres visible en móvil */
+    }
   </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,15 +86,15 @@
       <div class="overlay" data-overlay></div>
 
       <a href="#">
-        <h1 class="logo">Amelo's Studio</h1>
+        <h1 class="logo" data-i18n="brand.name">Amelo's Studio</h1>
       </a>
  <!-- Navegación -->
       <nav class="navbar" data-navbar>
 
         <div class="navbar-top">
-          <a href="#" class="logo">Menu</a>
+          <a href="#" class="logo" data-i18n="nav.menu">Menú</a>
 
-          <button class="nav-close-btn" aria-label="Close Menu" data-nav-close-btn>
+          <button class="nav-close-btn" data-i18n-attr="aria-label:nav.close_label" aria-label="Close Menu" data-nav-close-btn>
             <ion-icon name="close-outline"></ion-icon>
           </button>
         </div>
@@ -78,32 +102,31 @@
         <ul class="navbar-list">
 
           <li class="navbar-item">
-            <a href="#home" class="navbar-link" data-navbar-link>Inicio</a>
+            <a href="#home" class="navbar-link" data-navbar-link data-i18n="nav.home">Inicio</a>
           </li>
 
           <li class="navbar-item">
-            <a href="#about" class="navbar-link" data-navbar-link>Sobre nosotros</a>
+            <a href="#about" class="navbar-link" data-navbar-link data-i18n="nav.about">Sobre nosotros</a>
           </li>
 
           <li class="navbar-item">
-            <a href="#services" class="navbar-link" data-navbar-link>Servicios</a>
+            <a href="#services" class="navbar-link" data-navbar-link data-i18n="nav.services">Servicios</a>
           </li>
-<!--
+
           <li class="navbar-item">
-            <a href="#project" class="navbar-link" data-navbar-link>Our Projects</a>
-          </li>
--->
-          <li class="navbar-item">
-            <a href="#contact" class="navbar-link" data-navbar-link>Contáctanos</a>
+            <a href="#contact" class="navbar-link" data-navbar-link data-i18n="nav.contact">Contáctanos</a>
           </li>
 
         </ul>
 
       </nav>
 
-      <button class="nav-open-btn" aria-label="Open Menu" data-nav-open-btn>
+      <button class="nav-open-btn" data-i18n-attr="aria-label:nav.open_label" aria-label="Open Menu" aria-label="Open Menu" data-nav-open-btn>
         <ion-icon name="menu-outline"></ion-icon>
       </button>
+
+      <!-- Nuevo: botón de cambio de idioma (muestra la acción objetivo: EN/ES) -->
+      <button id="lang-toggle" class="lang-btn" aria-label="Cambiar idioma">EN</button>
 
     </div>
   </header>
@@ -117,9 +140,9 @@
 
           <div class="hero-content">
 
-            <h2 class="h2 hero-title">Servicios y soluciones para todos</h2>
+            <h2 class="h2 hero-title" data-i18n="hero.title">Servicios y soluciones para todos</h2>
 
-            <p class="hero-text">
+            <p class="hero-text" data-i18n="hero.text">
               Amelo Studio transforma ideas en soluciones digitales poderosas para personas y empresas.
             </p>
 
@@ -139,38 +162,33 @@
 
           <div class="about-content">
 
-            <h2 class="h2 section-title underline">Sobre nosotros</h2>
+            <h2 class="h2 section-title underline" data-i18n="about.title">Sobre nosotros</h2>
 
-            <p class="about-text">
-              Amelo Studio es un pequeño estudio de desarrollo digital formado por estudiantes universitarios y entusiastas de la tecnología. Aunque el equipo es reducido y está dando sus primeros pasos, comparte la pasión por aprender, experimentar y crear soluciones útiles tanto para clientes como para el público en general. Nos especializamos en el desarrollo de páginas web, aplicaciones y proyectos propios, siempre con el objetivo de crecer y aportar valor real.
+            <p class="about-text" data-i18n="about.text">
+              Amelo Studio es un pequeño estudio de desarrollo digital formado por estudiantes universitarios y entusiastas de la tecnología. Nos especializamos en el desarrollo de páginas web, aplicaciones y proyectos propios.
             </p>
 
-            <h2 class="h3 title">¿Qué ofrece Amelo Studio?<br><br></h2>
-<p class="about-text">
-  La misión de Amelo Studio es entregar resultados de alta calidad, adaptados a las necesidades de cada cliente. Cada proyecto es una oportunidad para aprender, mejorar y construir algo útil para la comunidad. Además de servicios para clientes, el estudio desarrolla proyectos personales y herramientas digitales abiertas al público.<br><br>
-  El enfoque de trabajo se basa en:
-</p>
+            <h2 class="h3 title" data-i18n="about.subtitle">¿Qué ofrece Amelo Studio?</h2>
 
-<ul class="about-list">
-  <li> ➤ <strong>Velocidad:</strong> Desarrollos ágiles con entregas en tiempos eficientes.<br></li>
-  <li> ➤ <strong>Confianza:</strong> Comunicación transparente y compromiso en cada proyecto.<br></li>
-  <li> ➤ <strong>Enfoque personalizado:</strong> Soluciones adaptadas a cada cliente.<br></li>
-  <li> ➤ <strong>Precios Accesibles:</strong> Precios ajustados a lo que cada cliente necesita.<br><br></li>
-</ul>
+            <p class="about-text" data-i18n="about.blurb">La misión de Amelo Studio es entregar resultados de alta calidad, adaptados a las necesidades de cada cliente.</p>
+
+            <ul class="about-list">
+              <li data-i18n="about.li1">➤ <strong>Velocidad:</strong> Desarrollos ágiles con entregas en tiempos eficientes.</li>
+              <li data-i18n="about.li2">➤ <strong>Confianza:</strong> Comunicación transparente y compromiso en cada proyecto.</li>
+              <li data-i18n="about.li3">➤ <strong>Enfoque personalizado:</strong> Soluciones adaptadas a cada cliente.</li>
+              <li data-i18n="about.li4">➤ <strong>Precios Accesibles:</strong> Precios ajustados a lo que cada cliente necesita.</li>
+            </ul>
 
             <!-- Estadísticas -->
             <ul class="stats-list">
-
               <li class="stats-card">
                 <p class="h3 stats-title">5</p>
-
-                <p class="stats-text">Clients</p>
+                <p class="stats-text" data-i18n="stats.clients">Clients</p>
               </li>
 
               <li class="stats-card">
                 <p class="h3 stats-title">27</p>
-
-                <p class="stats-text">Projects</p>
+                <p class="stats-text" data-i18n="stats.projects">Projects</p>
               </li>
             </ul>
           </div>
@@ -181,121 +199,107 @@
       <section class="section service" id="services">
         <div class="container">
 
-          <h2 class="h2 section-title underline">Mis Servicios</h2>
+          <h2 class="h2 section-title underline" data-i18n="services.title">Mis Servicios</h2>
 
           <ul class="service-list">
 
             <li>
-                <!-- Tarjeta 1: Página Web Básica -->
-                <div class="service-card">
-                    <div class="card-icon">
-                        <ion-icon name="laptop-outline"></ion-icon>
-                    </div>
-                <h3 class="h3 title">Página Web Básica</h3>
-    <p class="text">Desarrollo de sitios web básicos completos desde cero, adaptados a cada necesidad. 
-                    Ofrecemos un diseño limpio, rápido y funcional, compatible con cualquier dispositivo.</p>
-    <ul>
-      <li>Hasta 4 secciones personalizadas</li>
-      <li>Adaptado a móviles y dispositivos variados</li>
-      <li>Diseño moderno, limpio y rápido</li>
-        <li>Optimización básica SEO incluida</li>
-    </ul>
-
-    <h4 class="price"> Precio: Desde 100$</h4>
-  </div>
+              <div class="service-card">
+                <div class="card-icon">
+                  <ion-icon name="laptop-outline"></ion-icon>
+                </div>
+                <h3 class="h3 title" data-i18n="s.web_basic.title">Página Web Básica</h3>
+                <p class="text" data-i18n="s.web_basic.desc">Desarrollo de sitios web básicos...</p>
+                <ul>
+                  <li data-i18n="s.web_basic.f1">Hasta 4 secciones personalizadas</li>
+                  <li data-i18n="s.web_basic.f2">Adaptado a móviles y dispositivos variados</li>
+                  <li data-i18n="s.web_basic.f3">Diseño moderno, limpio y rápido</li>
+                  <li data-i18n="s.web_basic.f4">Optimización básica SEO incluida</li>
+                </ul>
+                <h4 class="price" data-i18n="s.web_basic.price">Precio: Desde 100$</h4>
+              </div>
             </li>
 
-                <li>
-                <!-- Tarjeta 1: Página Web Básica -->
-                <div class="service-card">
-                    <div class="card-icon">
-                        <ion-icon name="laptop-outline"></ion-icon>
-                    </div>
-                <h3 class="h3 title">Sitio Web multi-pagina</h3>
-    <p class="text">Desarrollo de sitios web completos y profesionales, con varias secciones y menús, adaptados a tus necesidades. 
-                   Ofrecemos un diseño moderno, funcional y responsive, ideal para empresas y proyectos que necesitan presencia completa en línea.</p>
-    <ul>
-    <li>Hasta 8 secciones personalizadas</li>
-  <li>Menú de navegación completo</li>
-  <li>Compatible con móviles y todos los dispositivos</li>
-  <li>Optimización básica SEO incluida</li>
-    </ul>
-
-    <h4 class="price"> Precio: Desde 150$</h4>
-  </div>
+            <li>
+              <div class="service-card">
+                <div class="card-icon">
+                  <ion-icon name="laptop-outline"></ion-icon>
+                </div>
+                <h3 class="h3 title" data-i18n="s.multi.title">Sitio Web multi-página</h3>
+                <p class="text" data-i18n="s.multi.desc">Desarrollo de sitios web completos y profesionales...</p>
+                <ul>
+                  <li data-i18n="s.multi.f1">Hasta 8 secciones personalizadas</li>
+                  <li data-i18n="s.multi.f2">Menú de navegación completo</li>
+                  <li data-i18n="s.multi.f3">Compatible con móviles y todos los dispositivos</li>
+                  <li data-i18n="s.multi.f4">Optimización básica SEO incluida</li>
+                </ul>
+                <h4 class="price" data-i18n="s.multi.price">Precio: Desde 150$</h4>
+              </div>
             </li>
-
-
 
             <li>
               <div class="service-card">
                 <div class="card-icon">
                   <ion-icon name="apps-outline"></ion-icon>
                 </div>
-                <h3 class="h3 title">Aplicaciones Web</h3>
-                <p class="text">El estudio crea herramientas o sistemas personalizados que funcionan directamente en el navegador. Pueden ser tanto para uso interno de una empresa como para ofrecer servicios online. Son rápidas, escalables y accesibles desde cualquier lugar.</p>
+                <h3 class="h3 title" data-i18n="s.webapps.title">Aplicaciones Web</h3>
+                <p class="text" data-i18n="s.webapps.desc">El estudio crea herramientas o sistemas personalizados...</p>
                 <ul>
-                  <li>Funcionan sin instalación</li>
-                  <li>Automatización de procesos</li>
-                  <li>Adaptadas al flujo de tu negocio</li>
+                  <li data-i18n="s.webapps.f1">Funcionan sin instalación</li>
+                  <li data-i18n="s.webapps.f2">Automatización de procesos</li>
+                  <li data-i18n="s.webapps.f3">Adaptadas al flujo de tu negocio</li>
                 </ul>
-                <h4 class="price"> Precio: Desde 125$</h4>
+                <h4 class="price" data-i18n="s.webapps.price">Precio: Desde 125$</h4>
               </div>
             </li>
 
             <li>
-              <!-- Tarjeta 4: Aplicaciones Móviles (Android) -->
-  <div class="service-card">
-    <div class="card-icon">
-      <ion-icon name="phone-portrait-outline"></ion-icon>
-    </div>
-    <h3 class="h3 title">Aplicaciones Móviles (Android)</h3>
-  <p class="text">Amelo Studio desarrolla aplicaciones móviles nativas para Android, ideales para negocios que quieren acercarse más a sus clientes o gestionar tareas desde el celular.</p>
-    <ul>
-      <li>Diseñadas para Android</li>
-      <li>Experiencia de usuario fluida</li>
-      <li>Publicación en Google Play (opcional)</li>
-    </ul>
-
-    <h4 class="price"> Precio: Desde 100$</h4>
-  </div>
+              <div class="service-card">
+                <div class="card-icon">
+                  <ion-icon name="phone-portrait-outline"></ion-icon>
+                </div>
+                <h3 class="h3 title" data-i18n="s.mobile.title">Aplicaciones Móviles (Android)</h3>
+                <p class="text" data-i18n="s.mobile.desc">Amelo Studio desarrolla aplicaciones móviles nativas para Android...</p>
+                <ul>
+                  <li data-i18n="s.mobile.f1">Diseñadas para Android</li>
+                  <li data-i18n="s.mobile.f2">Experiencia de usuario fluida</li>
+                  <li data-i18n="s.mobile.f3">Publicación en Google Play (opcional)</li>
+                </ul>
+                <h4 class="price" data-i18n="s.mobile.price">Precio: Desde 100$</h4>
+              </div>
             </li>
 
             <li>
-               <!-- Tarjeta 5: Servicios de Bases de Datos -->
-  <div class="service-card">
-    <div class="card-icon">
-      <ion-icon name="server-outline"></ion-icon>
-    </div>
-    <h3 class="h3 title">Servicios de Bases de Datos</h3>
-  <p class="text">Se diseña y gestiona bases de datos estructuradas que permiten almacenar, consultar y controlar información. También puede integrarlas a páginas web o apps, y crear interfaces visuales para administrarlas fácilmente. <b>Este servicio se le suma como uno adicional a cualquiera de nuestros dos servicios de sitios web</b></p>
-    <ul>
-      <li>Paneles de gestión a medida</li>
-      <li>Acceso seguro y organizado</li>
-      <li>Visualización de datos en tiempo real</li>
-    </ul>
-
-    <h4 class="price"> Precio: Desde 50$</h4>
-  </div>
+              <div class="service-card">
+                <div class="card-icon">
+                  <ion-icon name="server-outline"></ion-icon>
+                </div>
+                <h3 class="h3 title" data-i18n="s.db.title">Servicios de Bases de Datos</h3>
+                <p class="text" data-i18n="s.db.desc">Se diseña y gestiona bases de datos estructuradas...</p>
+                <ul>
+                  <li data-i18n="s.db.f1">Paneles de gestión a medida</li>
+                  <li data-i18n="s.db.f2">Acceso seguro y organizado</li>
+                  <li data-i18n="s.db.f3">Visualización de datos en tiempo real</li>
+                </ul>
+                <h4 class="price" data-i18n="s.db.price">Precio: Desde 50$</h4>
+              </div>
             </li>
 
-
             <li>
-              <!-- Tarjeta 7: Hosting Administrado -->
-  <div class="service-card">
-    <div class="card-icon">
-      <ion-icon name="cloud-outline"></ion-icon>
-    </div>
-    <h3 class="h3 title">Hosting Administrado</h3>
-  <p class="text">Amelo Studio se encarga de comprar, configurar y mantener el dominio y hosting del cliente. Así, el cliente puede enfocarse en su negocio mientras el estudio maneja toda la infraestructura web.</p>
-    <ul>
-      <li>Gestiono completamente el dominio y hosting</li>
-      <li>Realizo mantenimiento y actualizaciones</li>
-      <li>Ofrezco soporte técnico continuo</li>
-      <li>Manejo renovaciones automáticamente</li>
-    </ul>
-    <h4 class="price"> Precio: Desde 10$/mes</h4>
-  </div>
+              <div class="service-card">
+                <div class="card-icon">
+                  <ion-icon name="cloud-outline"></ion-icon>
+                </div>
+                <h3 class="h3 title" data-i18n="s.hosting.title">Hosting Administrado</h3>
+                <p class="text" data-i18n="s.hosting.desc">Amelo Studio se encarga de comprar, configurar y mantener el dominio y hosting del cliente...</p>
+                <ul>
+                  <li data-i18n="s.hosting.f1">Gestiono completamente el dominio y hosting</li>
+                  <li data-i18n="s.hosting.f2">Realizo mantenimiento y actualizaciones</li>
+                  <li data-i18n="s.hosting.f3">Ofrezco soporte técnico continuo</li>
+                  <li data-i18n="s.hosting.f4">Manejo renovaciones automáticamente</li>
+                </ul>
+                <h4 class="price" data-i18n="s.hosting.price">Precio: Desde 10$/mes</h4>
+              </div>
             </li>
 
           </ul>
@@ -307,7 +311,7 @@
       <section class="section project" id="project">
         <div class="container">
 
-          <h2 class="h2 section-title underline">Our Projects</h2>
+          <h2 class="h2 section-title underline" data-i18n="projects.title">Our Projects</h2>
 
           <ul class="project-list">
 
@@ -323,16 +327,10 @@
 
                 <div class="content">
 
-                  <h3 class="h3 title">
-                    <a href="https://cjmarine.org/">
-                      CJ Marine
-                    </a>
-                  </h3>
+                  <h3 class="h3 title" data-i18n="project.cj.title">CJ Marine</h3>
 
-                  <p class="text">
-                    En CJ Marine trabajan para que cada salida al mar sea segura, cómoda y divertida. Son especialistas en piezas de botes, accesorios, ropa y propelas, ofreciendo productos de calidad con un servicio confiable.
-                  <a href="https://cjmarine.org/">Visitar sitio web</a>
-                  </p>
+                  <p class="text" data-i18n="project.cj.desc">En CJ Marine trabajan para que cada salida al mar sea segura...</p>
+                  <a href="https://cjmarine.org/" data-i18n="projects.visit" class="project-visit">Visitar sitio web</a>
 
                   <div class="meta">
 
@@ -358,18 +356,10 @@
 
                 <div class="content">
 
-                  <h3 class="h3 title">
-                    <a href="https://laspalmitaspr.to/" target="_blank">
-                      Las Palmitas Airbnb
-                    </a>
-                  </h3>
+                  <h3 class="h3 title" data-i18n="project.palmitas.title">Las Palmitas Airbnb</h3>
 
-                  <p class="text">
-                    
-
-Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar de la costa oeste de Puerto Rico.
-<a href="https://laspalmitaspr.to/">Visitar sitio web</a>
-</p>
+                  <p class="text" data-i18n="project.palmitas.desc">Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada...</p>
+                  <a href="https://laspalmitaspr.to/" data-i18n="projects.visit" class="project-visit">Visitar sitio web</a>
 
                   <div class="meta">
 
@@ -393,8 +383,8 @@ Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar d
 
      <section class="contact">
         <div class="contact-content">
-          <h2 class="h2 section-title ">Contáctanos</h2>
-          <p ><strong>¿Tienes una duda o un proyecto en mente?</strong>
+          <h2 class="h2 section-title " data-i18n="contact.title">Contáctanos</h2>
+          <p data-i18n="contact.prompt"><strong>¿Tienes una duda o un proyecto en mente?</strong>
             Puedes escribir a Amelo Studio para conversar sobre lo que necesites o para aclarar cualquier duda.
             El equipo responderá lo antes posible para ayudarte personalmente.</p>
         </div>
@@ -405,36 +395,28 @@ Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar d
 
             <div class="contactForm" id="contact">
               <form action="https://formspree.io/f/mvgkvadb" method="POST">
-                <h2>Envíanos un mensaje:</h2>
-            
-        <!-- Campo de nombre -->
+                <h2 data-i18n="contact.form.title">Envíanos un mensaje:</h2>
+
         <div class="inputBox">
           <input type="text" name="name" required="required">
-          <span>Nombre completo</span>
+          <span data-i18n="contact.form.name">Nombre completo</span>
         </div>
-            
-        <!-- Campo de email -->
+
         <div class="inputBox">
           <input type="email" name="email" required="required">
-          <span>Email</span>
+          <span data-i18n="contact.form.email">Email</span>
         </div>
-            
-        <!-- Campo de mensaje -->
+
         <div class="inputBox">
           <textarea name="message" required="required"></textarea>
-          <span>Escribe tu mensaje</span>
+          <span data-i18n="contact.form.message">Escribe tu mensaje</span>
         </div>
-            
-        <!-- Campos ocultos (opcional) -->
-        <input type="hidden" name="_next" value="https://tu-sitio.com/gracias.html"> <!-- URL a la que redirigir después de enviar el formulario -->
-        <input type="hidden" name="_subject" value="Nuevo mensaje de formulario de contacto"> <!-- Asunto del correo recibido -->
-            
-        <!-- Botón de envío -->
+
         <div class="inputBox">
-          <input type="submit" value="Enviar">
+          <input type="submit" value="Enviar" data-i18n="contact.form.submit">
         </div>
-            </form>
-            
+              </form>
+
             </div>
         </div>
 
@@ -445,23 +427,23 @@ Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar d
   <footer class="footer">
     <div class="footer-bottom">
       <p class="copyright">
-         <a href="#" class="copyright-link"></a>
+         <a href="#" class="copyright-link" data-i18n="footer.copy"></a>
       </p>
       <!-- Contenedor para los íconos -->
       <div class="social-icons">
-        <a href="https://www.instagram.com/amelo.studio16/" target="_blank" class="social-icon">
+        <a href="https://www.instagram.com/amelo.studio16/" target="_blank" class="social-icon" data-i18n-attr="aria-label:social.instagram">
           <ion-icon name="logo-instagram"></ion-icon>
         </a>
-        <a href="https://wa.me/19392312803" target="_blank" class="social-icon whatsapp">
+        <a href="https://wa.me/19392312803" target="_blank" class="social-icon whatsapp" data-i18n-attr="aria-label:social.whatsapp">
           <ion-icon name="logo-whatsapp"></ion-icon>
         </a>
-        <a href="https://github.com/elo356" target="_blank" class="social-icon github">
+        <a href="https://github.com/elo356" target="_blank" class="social-icon github" data-i18n-attr="aria-label:social.github">
           <ion-icon name="logo-github"></ion-icon>
         </a>
-        <a href="https://www.facebook.com/profile.php?id=61582557879914&rdid=0H8CDjvCphrlouHs&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1DcLCgutTd%2F" target="_blank" class="social-icon facebook" aria-label="Facebook">
+        <a href="https://www.facebook.com/..." target="_blank" class="social-icon facebook" data-i18n-attr="aria-label:social.facebook" aria-label="Facebook">
           <ion-icon name="logo-facebook"></ion-icon>
         </a>
-        <a href="mailto:amelostudio16@gmail.com" class="social-icon email">
+        <a href="mailto:amelostudio16@gmail.com" class="social-icon email" data-i18n-attr="aria-label:social.email">
           <ion-icon name="mail-outline"></ion-icon>
         </a>
 
@@ -470,9 +452,248 @@ Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar d
   </footer>
   
   <!-- Nuevo: botón flotante de WhatsApp -->
-  <a class="whatsapp-float" href="https://wa.me/19392312803" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+  <a class="whatsapp-float" href="https://wa.me/19392312803" target="_blank" rel="noopener noreferrer" data-i18n-attr="aria-label:social.whatsapp_float" aria-label="Contactar por WhatsApp">
     <ion-icon name="logo-whatsapp"></ion-icon>
   </a>
+
+  <!-- Reemplazado: script de idioma ampliado -->
+  <script>
+    (function(){
+      const translations = {
+        meta: {
+          "title": "Amelo's Studio"
+        },
+        es: {
+          "brand.name":"Amelo's Studio",
+          "nav.menu":"Menú",
+          "nav.open_label":"Abrir menú",
+          "nav.close_label":"Cerrar menú",
+          "nav.home":"Inicio",
+          "nav.about":"Sobre nosotros",
+          "nav.services":"Servicios",
+          "nav.contact":"Contáctanos",
+          "hero.title":"Servicios y soluciones para todos",
+          "hero.text":"Amelo Studio transforma ideas en soluciones digitales poderosas para personas y empresas.",
+          "about.title":"Sobre nosotros",
+          "about.text":"Amelo Studio es un pequeño estudio de desarrollo digital formado por estudiantes universitarios y entusiastas de la tecnología. Nos especializamos en el desarrollo de páginas web, aplicaciones y proyectos propios.",
+          "about.subtitle":"¿Qué ofrece Amelo Studio?",
+          "about.blurb":"La misión de Amelo Studio es entregar resultados de alta calidad, adaptados a las necesidades de cada cliente.",
+          "about.li1":"➤ <strong>Velocidad:</strong> Desarrollos ágiles con entregas en tiempos eficientes.",
+          "about.li2":"➤ <strong>Confianza:</strong> Comunicación transparente y compromiso en cada proyecto.",
+          "about.li3":"➤ <strong>Enfoque personalizado:</strong> Soluciones adaptadas a cada cliente.",
+          "about.li4":"➤ <strong>Precios Accesibles:</strong> Precios ajustados a lo que cada cliente necesita.",
+          "stats.clients":"Clientes",
+          "stats.projects":"Proyectos",
+          "services.title":"Mis Servicios",
+          "s.web_basic.title":"Página Web Básica",
+          "s.web_basic.desc":"Desarrollo de sitios web básicos completos desde cero, adaptados a cada necesidad.",
+          "s.web_basic.f1":"Hasta 4 secciones personalizadas",
+          "s.web_basic.f2":"Adaptado a móviles y dispositivos variados",
+          "s.web_basic.f3":"Diseño moderno, limpio y rápido",
+          "s.web_basic.f4":"Optimización básica SEO incluida",
+          "s.web_basic.price":"Precio: Desde 100$",
+          "s.multi.title":"Sitio Web multi-página",
+          "s.multi.desc":"Sitios web completos y profesionales con varias secciones y menús.",
+          "s.multi.f1":"Hasta 8 secciones personalizadas",
+          "s.multi.f2":"Menú de navegación completo",
+          "s.multi.f3":"Compatible con móviles y todos los dispositivos",
+          "s.multi.f4":"Optimización básica SEO incluida",
+          "s.multi.price":"Precio: Desde 150$",
+          "s.webapps.title":"Aplicaciones Web",
+          "s.webapps.desc":"Herramientas o sistemas personalizados que funcionan en el navegador.",
+          "s.webapps.f1":"Funcionan sin instalación",
+          "s.webapps.f2":"Automatización de procesos",
+          "s.webapps.f3":"Adaptadas al flujo de tu negocio",
+          "s.webapps.price":"Precio: Desde 125$",
+          "s.mobile.title":"Aplicaciones Móviles (Android)",
+          "s.mobile.desc":"Aplicaciones móviles nativas para Android, ideales para negocios.",
+          "s.mobile.f1":"Diseñadas para Android",
+          "s.mobile.f2":"Experiencia de usuario fluida",
+          "s.mobile.f3":"Publicación en Google Play (opcional)",
+          "s.mobile.price":"Precio: Desde 100$",
+          "s.db.title":"Servicios de Bases de Datos",
+          "s.db.desc":"Diseño y gestión de bases de datos estructuradas e interfaces de administración.",
+          "s.db.f1":"Paneles de gestión a medida",
+          "s.db.f2":"Acceso seguro y organizado",
+          "s.db.f3":"Visualización de datos en tiempo real",
+          "s.db.price":"Precio: Desde 50$",
+          "s.hosting.title":"Hosting Administrado",
+          "s.hosting.desc":"Compra, configuración y mantenimiento del dominio y hosting del cliente.",
+          "s.hosting.f1":"Gestiono completamente el dominio y hosting",
+          "s.hosting.f2":"Realizo mantenimiento y actualizaciones",
+          "s.hosting.f3":"Ofrezco soporte técnico continuo",
+          "s.hosting.f4":"Manejo renovaciones automáticamente",
+          "s.hosting.price":"Precio: Desde 10$/mes",
+          "projects.title":"Our Projects",
+          "project.cj.title":"CJ Marine",
+          "project.cj.desc":"En CJ Marine trabajan para que cada salida al mar sea segura, cómoda y divertida.",
+          "project.palmitas.title":"Las Palmitas Airbnb",
+          "project.palmitas.desc":"Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar de la costa.",
+          "projects.visit":"Visitar sitio web",
+          "contact.title":"Contáctanos",
+          "contact.prompt":"<strong>¿Tienes una duda o un proyecto en mente?</strong> Puedes escribir a Amelo Studio para conversar sobre lo que necesites.",
+          "contact.form.title":"Envíanos un mensaje:",
+          "contact.form.name":"Nombre completo",
+          "contact.form.email":"Email",
+          "contact.form.message":"Escribe tu mensaje",
+          "contact.form.submit":"Enviar",
+          "footer.copy":"",
+          "social.instagram":"Instagram",
+          "social.whatsapp":"WhatsApp",
+          "social.github":"GitHub",
+          "social.facebook":"Facebook",
+          "social.email":"Email",
+          "social.whatsapp_float":"Contactar por WhatsApp"
+        },
+        en: {
+          "brand.name":"Amelo's Studio",
+          "nav.menu":"Menu",
+          "nav.open_label":"Open menu",
+          "nav.close_label":"Close menu",
+          "nav.home":"Home",
+          "nav.about":"About",
+          "nav.services":"Services",
+          "nav.contact":"Contact",
+          "hero.title":"Services and solutions for everyone",
+          "hero.text":"Amelo Studio transforms ideas into powerful digital solutions for people and businesses.",
+          "about.title":"About us",
+          "about.text":"Amelo Studio is a small digital development studio formed by university students and technology enthusiasts.",
+          "about.subtitle":"What does Amelo Studio offer?",
+          "about.blurb":"Our mission is to deliver high-quality results tailored to each client's needs.",
+          "about.li1":"➤ <strong>Speed:</strong> Agile development with efficient delivery times.",
+          "about.li2":"➤ <strong>Trust:</strong> Transparent communication and commitment in every project.",
+          "about.li3":"➤ <strong>Personalized approach:</strong> Solutions adapted to each client.",
+          "about.li4":"➤ <strong>Affordable prices:</strong> Prices adjusted to what each client needs.",
+          "stats.clients":"Clients",
+          "stats.projects":"Projects",
+          "services.title":"My Services",
+          "s.web_basic.title":"Basic Website",
+          "s.web_basic.desc":"Development of complete basic websites from scratch, tailored to each need.",
+          "s.web_basic.f1":"Up to 4 custom sections",
+          "s.web_basic.f2":"Responsive and mobile-friendly",
+          "s.web_basic.f3":"Modern, clean and fast design",
+          "s.web_basic.f4":"Basic SEO optimization included",
+          "s.web_basic.price":"Price: From $100",
+          "s.multi.title":"Multi-page Website",
+          "s.multi.desc":"Complete professional websites with multiple sections and menus.",
+          "s.multi.f1":"Up to 8 custom sections",
+          "s.multi.f2":"Full navigation menu",
+          "s.multi.f3":"Mobile and device compatibility",
+          "s.multi.f4":"Basic SEO optimization included",
+          "s.multi.price":"Price: From $150",
+          "s.webapps.title":"Web Applications",
+          "s.webapps.desc":"Custom tools or systems that run directly in the browser.",
+          "s.webapps.f1":"Works without installation",
+          "s.webapps.f2":"Process automation",
+          "s.webapps.f3":"Adapted to your business workflow",
+          "s.webapps.price":"Price: From $125",
+          "s.mobile.title":"Mobile Applications (Android)",
+          "s.mobile.desc":"Native Android mobile apps, ideal for businesses.",
+          "s.mobile.f1":"Designed for Android",
+          "s.mobile.f2":"Smooth user experience",
+          "s.mobile.f3":"Publication on Google Play (optional)",
+          "s.mobile.price":"Price: From $100",
+          "s.db.title":"Database Services",
+          "s.db.desc":"Design and management of structured databases and admin interfaces.",
+          "s.db.f1":"Custom management panels",
+          "s.db.f2":"Secure and organized access",
+          "s.db.f3":"Real-time data visualization",
+          "s.db.price":"Price: From $50",
+          "s.hosting.title":"Managed Hosting",
+          "s.hosting.desc":"Purchase, configuration and maintenance of the client's domain and hosting.",
+          "s.hosting.f1":"Full domain and hosting management",
+          "s.hosting.f2":"Maintenance and updates",
+          "s.hosting.f3":"Continuous technical support",
+          "s.hosting.f4":"Automatic renewals handling",
+          "s.hosting.price":"Price: From $10/month",
+          "projects.title":"Our Projects",
+          "project.cj.title":"CJ Marine",
+          "project.cj.desc":"CJ Marine works to make every trip to the sea safe, comfortable and enjoyable.",
+          "project.palmitas.title":"Las Palmitas Airbnb",
+          "project.palmitas.desc":"Your home away from home. Spacious, comfortable and perfectly located to enjoy the coast.",
+          "projects.visit":"Visit website",
+          "contact.title":"Contact Us",
+          "contact.prompt":"<strong>Have a question or a project in mind?</strong> You can write to Amelo Studio to discuss your needs.",
+          "contact.form.title":"Send us a message:",
+          "contact.form.name":"Full name",
+          "contact.form.email":"Email",
+          "contact.form.message":"Write your message",
+          "contact.form.submit":"Send",
+          "footer.copy":"",
+          "social.instagram":"Instagram",
+          "social.whatsapp":"WhatsApp",
+          "social.github":"GitHub",
+          "social.facebook":"Facebook",
+          "social.email":"Email",
+          "social.whatsapp_float":"Contact via WhatsApp"
+        }
+      };
+
+      const button = document.getElementById('lang-toggle');
+      const getLang = () => localStorage.getItem('amelo_lang') || 'es';
+      const applyTranslations = (lang) => {
+        // document title
+        const metaTitle = translations.meta && translations.meta.title ? translations.meta.title : (translations[lang] && translations[lang]['brand.name']) || document.title;
+        document.title = metaTitle;
+
+        // elements with data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(el=>{
+          const key = el.getAttribute('data-i18n');
+          if(!key) return;
+          const val = (translations[lang] && translations[lang][key]) || '';
+          // inputs of type submit/button -> set value
+          if(el.tagName === 'INPUT' && (el.type === 'submit' || el.type === 'button')) {
+            el.value = val;
+            return;
+          }
+          // other elements -> innerHTML
+          el.innerHTML = val;
+        });
+
+        // attributes mapping: data-i18n-attr="attr:key;attr2:key2"
+        document.querySelectorAll('[data-i18n-attr]').forEach(el=>{
+          const map = el.getAttribute('data-i18n-attr');
+          if(!map) return;
+          map.split(';').forEach(pair=>{
+            const [attr,key] = pair.split(':').map(s=>s && s.trim());
+            if(!attr || !key) return;
+            const val = (translations[lang] && translations[lang][key]) || '';
+            el.setAttribute(attr, val);
+          });
+        });
+
+        // button text shows target language to switch to
+        if(button) button.textContent = (lang === 'es') ? 'EN' : 'ES';
+      };
+
+      const setLang = (lang) => {
+        localStorage.setItem('amelo_lang', lang);
+        applyTranslations(lang);
+      };
+
+      if(button) {
+        button.addEventListener('click', ()=> {
+          const current = getLang();
+          const next = current === 'es' ? 'en' : 'es';
+          setLang(next);
+        });
+      }
+
+      // nuevo: sincronizar apariencia del botón de idioma con el scroll
+      const langBtn = document.getElementById('lang-toggle');
+      const onScrollLangBtn = () => {
+        if (!langBtn) return;
+        const scrolled = window.scrollY > 16; // umbral similar al resto del header
+        langBtn.classList.toggle('scrolled', scrolled);
+      };
+      window.addEventListener('scroll', onScrollLangBtn, { passive: true });
+      // inicializar estado al cargar
+      onScrollLangBtn();
+
+      // inicializar idioma
+      setLang(getLang());
+    })();
+  </script>
 
   <script src="script.js"></script>
 
