@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuración - Amelo Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<aside class="w-64 bg-white h-screen shadow-md fixed">
+  <div class="p-6 text-2xl font-bold text-blue-600">Amelo Studio</div>
+  <nav class="mt-10">
+    <a href="mainboard.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
+    <a href="calendar.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
+    <a href="configuracion.html" class="block py-2.5 px-4 rounded bg-blue-100 font-semibold text-blue-700">Configuración</a>
+  </nav>
+</aside>
+
+<div class="ml-64 p-8">
+  <header class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-700">Configuración</h1>
+    <div>
+      <span class="mr-4 font-medium" id="currentUserDisplay">Admin</span>
+      <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Usuarios -->
+  <section class="bg-white p-6 rounded shadow mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-700">Usuarios</h2>
+      <button id="addUserBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Agregar Usuario</button>
+    </div>
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-100 border-b">
+          <th class="py-2 px-4">Usuario</th>
+          <th class="py-2 px-4 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="userTable"></tbody>
+    </table>
+  </section>
+
+
+<!-- Modal Agregar Usuario -->
+<div id="addUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+  <div class="bg-white p-6 rounded shadow-lg w-96">
+    <h2 class="text-xl font-semibold mb-4">Agregar Usuario</h2>
+    <form id="addUserForm" class="flex flex-col gap-3">
+      <input type="text" id="newUsername" placeholder="Nombre de usuario" class="p-2 border rounded" required>
+      
+      <label class="flex items-center gap-2">
+        Rol:
+        <select id="newUserRole" class="p-2 border rounded">
+          <option value="worker" selected>Worker</option>
+          <option value="admin">Admin</option>
+        </select>
+      </label>
+      
+      <div class="flex justify-end gap-2 mt-2">
+        <button type="button" id="closeUserModal" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // --- Configuración Firebase ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnIUBoaMViSI2jHGPD9NoJaJrTQiL-UFU",
+    authDomain: "amelos-studio.firebaseapp.com",
+    databaseURL: "https://amelos-studio-default-rtdb.firebaseio.com",
+    projectId: "amelos-studio",
+    storageBucket: "amelos-studio.firebasestorage.app",
+    messagingSenderId: "11496902615",
+    appId: "1:11496902615:web:33ce1c36199e7c17be8592",
+    measurementId: "G-DR054GPPZF"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // --- Elementos del DOM ---
+  const addUserBtn = document.getElementById('addUserBtn');
+  const addUserModal = document.getElementById('addUserModal');
+  const closeUserModal = document.getElementById('closeUserModal');
+  const addUserForm = document.getElementById('addUserForm');
+  const userTable = document.getElementById('userTable');
+
+  const editPasswordBtn = document.getElementById('editPasswordBtn');
+  const savePasswordBtn = document.getElementById('savePasswordBtn');
+  const globalPassword = document.getElementById('globalPassword');
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  const currentUserDisplay = document.getElementById('currentUserDisplay');
+
+  // --- Usuario logueado (simulación, se debe reemplazar por sesión real) ---
+  let currentUser = { username: 'Elian', role: 'admin' }; // Cambiar según autenticación
+  currentUserDisplay.textContent = currentUser.username + ' (' + currentUser.role + ')';
+
+  // --- Mostrar modal ---
+  addUserBtn.addEventListener('click', () => {
+    addUserModal.classList.remove('hidden');
+    addUserModal.classList.add('flex');
+  });
+
+  closeUserModal.addEventListener('click', () => {
+    addUserModal.classList.add('hidden');
+    addUserModal.classList.remove('flex');
+  });
+
+  // --- Funciones Firebase ---
+  function renderUsers(data) {
+    userTable.innerHTML = '';
+    for (const id in data) {
+      const user = data[id];
+      const isAdmin = user.role === 'admin';
+      const row = document.createElement('tr');
+      row.classList.add('border-b');
+      row.innerHTML = `
+        <td class="py-2 px-4 ${isAdmin ? 'font-medium text-gray-800' : 'text-gray-700'}">
+          ${user.username} (${user.role})
+        </td>
+        <td class="py-2 px-4 text-right">
+          ${currentUser.role === 'admin' && !isAdmin 
+            ? `<button class="text-red-500 hover:underline delete-user" data-id="${id}">Eliminar</button>` 
+            : (isAdmin ? '<span class="text-gray-500 italic">No se puede eliminar</span>' : '')}
+        </td>
+      `;
+      userTable.appendChild(row);
+    }
+  }
+
+  // Cargar usuarios
+  db.ref('usuarios').on('value', snapshot => {
+    if(snapshot.exists()) {
+      renderUsers(snapshot.val());
+    }
+  });
+
+  // Agregar usuario
+  addUserForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = document.getElementById('newUsername').value.trim();
+    const role = document.getElementById('newUserRole').value;
+    if(!username) return;
+
+    db.ref('usuarios').push({ username, password: 'ameyelo16', role });
+    addUserForm.reset();
+    addUserModal.classList.add('hidden');
+    addUserModal.classList.remove('flex');
+  });
+
+  // Eliminar usuario
+  document.addEventListener('click', e => {
+    if(e.target.classList.contains('delete-user')) {
+      const id = e.target.getAttribute('data-id');
+      if(id) db.ref('usuarios/' + id).remove();
+    }
+  });
+
+  // --- Contraseña Global ---
+  db.ref('globalPassword').on('value', snapshot => {
+    if(snapshot.exists()) globalPassword.value = snapshot.val();
+  });
+
+  editPasswordBtn.addEventListener('click', () => {
+    if(currentUser.role !== 'admin') return;
+    globalPassword.removeAttribute('disabled');
+    savePasswordBtn.classList.remove('hidden');
+    editPasswordBtn.classList.add('hidden');
+  });
+
+  document.getElementById('passwordForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if(currentUser.role !== 'admin') return;
+    db.ref('globalPassword').set(globalPassword.value);
+    globalPassword.setAttribute('disabled', true);
+    savePasswordBtn.classList.add('hidden');
+    editPasswordBtn.classList.remove('hidden');
+    alert('Contraseña actualizada exitosamente.');
+  });
+
+  // --- Permisos para botones según rol ---
+  function updatePermissions() {
+    if(currentUser.role !== 'admin') {
+      editPasswordBtn.setAttribute('disabled', true);
+      editPasswordBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  }
+  updatePermissions();
+
+  // Logout
+  logoutBtn?.addEventListener('click', () => {
+    window.location.href = '../index.html';
+  });
+</script>
+
+</body>
+</html>

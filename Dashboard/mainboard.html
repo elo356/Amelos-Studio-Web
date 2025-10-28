@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amelo Studio Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+    /* Shared responsive rules for dashboard pages */
+    #sidebar { transition: transform .25s ease; }
+    @media (max-width: 900px) {
+      #sidebar { transform: translateX(-100%); position: fixed; left:0; top:0; bottom:0; z-index:40;}
+      #sidebar.open { transform: translateX(0); }
+      #sidebar.pinned { transform: translateX(0); } /* pinned shows sidebar */
+      #mainContent { margin-left: 0 !important; padding: 1rem !important; }
+      .mobile-tap { padding: 12px; font-size: 16px; }
+    }
+
+    /* Sidebar tab (mobile): small handle to open the sidebar */
+    .sidebar-tab {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #0f172a;
+      color: #fff;
+      width: 42px;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      z-index: 10002;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .sidebar-pin-btn {
+      background: transparent;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<!-- Sidebar -->
+<aside id="sidebar" class="w-64 bg-white h-screen shadow-md fixed">
+  <div class="p-6 text-2xl font-bold text-blue-600 flex items-center justify-between">
+    <span>Amelo Studio</span>
+    <button id="sidebarPinBtn" class="sidebar-pin-btn" title="Fijar menú">📌</button>
+  </div>
+  <nav class="mt-10">
+    <a href="#" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
+    <a href="calendar.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
+    <a href="config.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Configuración</a>
+  </nav>
+</aside>
+
+<!-- Sidebar tab: visible en móvil para abrir el menú -->
+<button id="sidebarTab" class="sidebar-tab md:hidden" aria-label="Abrir menú">☰</button>
+
+<div id="mainContent" class="ml-64 p-8">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded bg-gray-100 mobile-tap" aria-label="Abrir menú">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+      <h1 class="text-2xl font-bold">Dashboard</h1>
+    </div>
+    <div>
+      <span class="mr-4">Admin</span>
+      <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Estadísticas -->
+  <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
+      <h2 class="text-lg font-semibold text-gray-600">Clientes Totales</h2>
+      <p id="totalClients" class="text-3xl font-bold text-blue-600 mt-2">0</p>
+    </div>
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
+      <h2 class="text-lg font-semibold text-gray-600">Ganancias Generadas</h2>
+      <p id="totalRevenue" class="text-3xl font-bold text-green-600 mt-2">$0</p>
+    </div>
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
+      <h2 class="text-lg font-semibold text-gray-600">Ganancias Amelo</h2>
+      <p id="ameloRevenue" class="text-3xl font-bold text-green-600 mt-2">$0</p>
+    </div>
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
+      <h2 class="text-lg font-semibold text-gray-600">Pagos Pendientes</h2>
+      <p id="pendingPayments" class="text-3xl font-bold text-yellow-500 mt-2">0</p>
+    </div>
+  </section>
+
+  <!-- Agregar cliente -->
+  <div class="mb-6 flex justify-between items-center">
+    <h2 class="text-2xl font-semibold text-gray-700">Clientes</h2>
+    <button id="addClientBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Agregar Cliente</button>
+  </div>
+
+  <div id="clientContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</div>
+
+<!-- Modal Agregar / Editar Cliente -->
+<div id="clientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+  <div class="bg-white p-6 rounded shadow-lg w-96">
+    <h2 id="modalTitle" class="text-xl font-semibold mb-4">Agregar Cliente</h2>
+    <form id="clientForm" class="flex flex-col gap-3">
+      <input type="text" id="clientName" placeholder="Nombre" class="p-2 border rounded" required>
+      <input type="text" id="projectName" placeholder="Nombre del Proyecto" class="p-2 border rounded" required>
+      <input type="url" id="repoLink" placeholder="Link del repositorio (https://github.com/...)" class="p-2 border rounded" required>
+      <input type="text" id="nextPayment" placeholder="Próximo pago (dd/mm/yyyy)" class="p-2 border rounded">
+      <input type="number" id="paymentAmount" placeholder="Precio a pagar" class="p-2 border rounded" required step="0.01">
+      <input type="number" id="ameloAmount" placeholder="Monto que va a Amelo" class="p-2 border rounded" required step="0.01">
+      <textarea id="notes" placeholder="Notas" class="p-2 border rounded"></textarea>
+      <div class="flex justify-end gap-2 mt-2">
+        <button type="button" id="closeClientModal" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // --- Firebase ---
+  const firebaseConfig = {
+     apiKey: "AIzaSyBnIUBoaMViSI2jHGPD9NoJaJrTQiL-UFU",
+
+  authDomain: "amelos-studio.firebaseapp.com",
+
+  databaseURL: "https://amelos-studio-default-rtdb.firebaseio.com",
+
+  projectId: "amelos-studio",
+
+  storageBucket: "amelos-studio.firebasestorage.app",
+
+  messagingSenderId: "11496902615",
+
+  appId: "1:11496902615:web:33ce1c36199e7c17be8592",
+
+  measurementId: "G-DR054GPPZF"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const clientsRef = db.ref('clients');
+
+  // --- Elementos ---
+  const addClientBtn = document.getElementById('addClientBtn');
+  const clientModal = document.getElementById('clientModal');
+  const closeClientModal = document.getElementById('closeClientModal');
+  const clientContainer = document.getElementById('clientContainer');
+  const totalClients = document.getElementById('totalClients');
+  const totalRevenue = document.getElementById('totalRevenue');
+  const ameloRevenue = document.getElementById('ameloRevenue');
+  const pendingPayments = document.getElementById('pendingPayments');
+  const clientForm = document.getElementById('clientForm');
+  const modalTitle = document.getElementById('modalTitle');
+
+  let clients = [];
+  let editKey = null;
+
+  // --- Mostrar/ocultar modal ---
+  addClientBtn.addEventListener('click', () => {
+    modalTitle.textContent = "Agregar Cliente";
+    clientForm.reset();
+    editKey = null;
+    clientModal.classList.remove('hidden');
+    clientModal.classList.add('flex');
+  });
+  closeClientModal.addEventListener('click', () => {
+    clientModal.classList.add('hidden');
+    clientModal.classList.remove('flex');
+  });
+
+  // --- Cargar clientes ---
+  clientsRef.on('value', snapshot => {
+    clients = [];
+    snapshot.forEach(child => {
+      const client = child.val();
+      client.key = child.key;
+      clients.push(client);
+    });
+    renderClients();
+  });
+
+  // --- Agregar / Editar ---
+  clientForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('clientName').value;
+    const project = document.getElementById('projectName').value;
+    const repo = extractRepoPath(document.getElementById('repoLink').value);
+    const nextPayment = document.getElementById('nextPayment').value || 'No definido';
+    const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+    const ameloAmount = parseFloat(document.getElementById('ameloAmount').value);
+    const notes = document.getElementById('notes').value;
+    const clientData = { name, project, repo, nextPayment, paymentAmount, ameloAmount, notes, paid: false };
+
+    if(editKey) {
+      clientsRef.child(editKey).set(clientData);
+    } else {
+      clientsRef.push(clientData);
+    }
+
+    clientModal.classList.add('hidden');
+    clientModal.classList.remove('flex');
+  });
+
+  function extractRepoPath(link) {
+    try { return link.split("github.com/")[1].replace(/\/$/,""); }
+    catch { return ""; }
+  }
+
+  function deleteClient(index) {
+    const key = clients[index].key;
+    clientsRef.child(key).remove();
+  }
+
+  function editClient(index) {
+    const c = clients[index];
+    editKey = c.key;
+    modalTitle.textContent = "Editar Cliente";
+    document.getElementById('clientName').value = c.name;
+    document.getElementById('projectName').value = c.project;
+    document.getElementById('repoLink').value = `https://github.com/${c.repo}`;
+    document.getElementById('nextPayment').value = c.nextPayment;
+    document.getElementById('paymentAmount').value = c.paymentAmount;
+    document.getElementById('ameloAmount').value = c.ameloAmount;
+    document.getElementById('notes').value = c.notes;
+    clientModal.classList.remove('hidden');
+    clientModal.classList.add('flex');
+  }
+
+  function togglePaid(index) {
+    const c = clients[index];
+    clientsRef.child(c.key).update({ paid: !c.paid });
+  }
+
+  function renderClients() {
+    clientContainer.innerHTML = "";
+    let totalRev = 0, ameloRev = 0, pending = 0;
+    clients.forEach((c, index) => {
+      const card = document.createElement('div');
+      card.className = "bg-white p-6 rounded shadow hover:shadow-lg transition relative";
+      totalRev += c.paymentAmount || 0;
+      ameloRev += c.ameloAmount || 0;
+      if(!c.paid) pending++;
+
+      card.innerHTML = `
+        <h2 class="text-xl font-semibold text-gray-800">Cliente: ${c.name}</h2>
+        <p class="mt-2 text-gray-600">Proyecto: ${c.project}</p>
+        <p class="mt-1 text-gray-600">Próximo pago: ${c.nextPayment}</p>
+        <p class="mt-1 text-gray-600">Pago: $${c.paymentAmount.toFixed(2)}</p>
+        <p class="mt-1 text-gray-600">Amelo: $${c.ameloAmount.toFixed(2)}</p>
+        <p class="mt-2 text-gray-500 text-sm">Notas: ${c.notes || 'Ninguna'}</p>
+        <div class="mt-4 flex gap-2">
+          <a href="viewProject.html?repo=${encodeURIComponent(c.repo)}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Ver Proyecto</a>
+          <button onclick="editClient(${index})" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Editar</button>
+          <button onclick="togglePaid(${index})" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">${c.paid ? 'No Pagado' : 'Pagado'}</button>
+          <button onclick="deleteClient(${index})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
+        </div>
+      `;
+      clientContainer.appendChild(card);
+    });
+
+    totalClients.textContent = clients.length;
+    totalRevenue.textContent = `$${totalRev.toFixed(2)}`;
+    ameloRevenue.textContent = `$${ameloRev.toFixed(2)}`;
+    pendingPayments.textContent = pending;
+  }
+
+  // mobile sidebar toggle for mainboard
+  (function(){
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const sidebarTab = document.getElementById('sidebarTab');
+    const sidebarPinBtn = document.getElementById('sidebarPinBtn');
+
+    // pin state from localStorage
+    const pinned = localStorage.getItem('sidebar_pinned') === '1';
+    if (pinned) sidebar.classList.add('open','pinned');
+
+    if(mobileBtn && sidebar) {
+      mobileBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+      main.addEventListener('click', ()=> { 
+        if(window.innerWidth <= 900 && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) sidebar.classList.remove('open'); 
+      });
+    }
+
+    // sidebar tab opens/closes sidebar
+    if (sidebarTab) {
+      sidebarTab.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+    }
+    
+    // pin/unpin sidebar
+    if (sidebarPinBtn) {
+      const setPinned = (state) => {
+        if (state) {
+          sidebar.classList.add('pinned','open');
+          localStorage.setItem('sidebar_pinned','1');
+          sidebarPinBtn.textContent = '📌';
+        } else {
+          sidebar.classList.remove('pinned');
+          localStorage.removeItem('sidebar_pinned');
+          sidebarPinBtn.textContent = '📌';
+        }
+      };
+      sidebarPinBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nowPinned = sidebar.classList.contains('pinned');
+        setPinned(!nowPinned);
+      });
+      // initialize pin button state
+      if (pinned) sidebarPinBtn.classList.add('active');
+    }
+
+  })();
+
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) logoutBtn.addEventListener('click', () => window.location.href = '../index.html');
+</script>
+</body>
+</html>

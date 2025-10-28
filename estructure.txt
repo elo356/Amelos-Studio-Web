@@ -1,0 +1,18 @@
+  const firebaseConfig = {
+     apiKey: "AIzaSyBnIUBoaMViSI2jHGPD9NoJaJrTQiL-UFU",
+
+  authDomain: "amelos-studio.firebaseapp.com",
+
+  databaseURL: "https://amelos-studio-default-rtdb.firebaseio.com",
+
+  projectId: "amelos-studio",
+
+  storageBucket: "amelos-studio.firebasestorage.app",
+
+  messagingSenderId: "11496902615",
+
+  appId: "1:11496902615:web:33ce1c36199e7c17be8592",
+
+  measurementId: "G-DR054GPPZF"
+
+    };

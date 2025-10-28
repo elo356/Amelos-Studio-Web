@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso Privado - Amelo's Studio Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 flex justify-center items-center h-screen">
+
+<div class="bg-white shadow-lg rounded-2xl w-96 p-8">
+  <div class="text-center mb-6">
+    <h1 class="text-3xl font-bold text-blue-600">Amelo's Studio Dashboard</h1>
+    <p class="text-gray-500 mt-2 text-sm">Acceso Privado</p>
+  </div>
+
+  <div class="bg-yellow-50 border border-yellow-300 text-yellow-700 text-sm p-3 rounded mb-4 text-center">
+    Este panel es de uso exclusivo para administradores de Amelo Studio.
+  </div>
+
+  <form id="loginForm" class="flex flex-col gap-4">
+    <div>
+      <label class="text-gray-700 text-sm mb-1 block">Usuario</label>
+      <input type="text" id="username" class="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Tu usuario">
+    </div>
+
+    <div>
+      <label class="text-gray-700 text-sm mb-1 block">Contraseña</label>
+      <input type="password" id="password" class="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="********">
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">Iniciar Sesión</button>
+  </form>
+
+  <p id="errorMessage" class="text-red-500 text-sm mt-3 text-center hidden">Usuario o contraseña incorrectos</p>
+
+  <div class="mt-6 text-center">
+    <p class="text-gray-500 text-sm mb-2">¿Entraste por error?</p>
+    <button onclick="window.location.href='https://amelostudio.me/'" class="text-blue-500 hover:underline text-sm">Regresar al sitio principal</button>
+  </div>
+
+  <div class="mt-8 text-center text-gray-400 text-xs">
+    © 2025 Amelo Studio. Todos los derechos reservados.
+  </div>
+</div>
+
+<script>
+  // --- Firebase ---
+  const firebaseConfig = {
+     apiKey: "AIzaSyBnIUBoaMViSI2jHGPD9NoJaJrTQiL-UFU",
+
+  authDomain: "amelos-studio.firebaseapp.com",
+
+  databaseURL: "https://amelos-studio-default-rtdb.firebaseio.com",
+
+  projectId: "amelos-studio",
+
+  storageBucket: "amelos-studio.firebasestorage.app",
+
+  messagingSenderId: "11496902615",
+
+  appId: "1:11496902615:web:33ce1c36199e7c17be8592",
+
+  measurementId: "G-DR054GPPZF"
+
+    };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const usersRef = db.ref('usuarios');
+
+  const form = document.getElementById("loginForm");
+  const errorMessage = document.getElementById("errorMessage");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    try {
+      const snapshot = await usersRef.once('value');
+      const usersData = snapshot.val();
+      let acceso = false;
+
+      for(const key in usersData) {
+        const u = usersData[key];
+        // La contraseña global está en firebase en u.password
+        if(u.username === username && password === u.password) {
+          acceso = true;
+          localStorage.setItem("usuarioActivo", username);
+          window.location.href = "mainboard.html";
+          break;
+        }
+      }
+
+      if(!acceso) {
+        errorMessage.classList.remove("hidden");
+        setTimeout(() => errorMessage.classList.add("hidden"), 3000);
+      }
+
+    } catch(err) {
+      console.error("Error leyendo usuarios de Firebase", err);
+      errorMessage.textContent = "Error al conectar con la base de datos";
+      errorMessage.classList.remove("hidden");
+    }
+  });
+</script>
+
+</body>
+</html>

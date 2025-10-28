@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ver Proyecto - Amelo Studio</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800" id="repoName">Cargando...</h1>
+      <a href="mainboard.html" class="text-blue-600 hover:underline">← Regresar</a>
+    </div>
+
+    <div id="breadcrumb" class="text-sm text-gray-500 mb-4"></div>
+    <div id="content" class="text-gray-700">
+      <p>Cargando archivos del repositorio...</p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const repo = params.get("repo");
+    const path = params.get("path") || "";
+
+    const repoNameEl = document.getElementById("repoName");
+    const contentEl = document.getElementById("content");
+    const breadcrumbEl = document.getElementById("breadcrumb");
+
+    repoNameEl.textContent = repo ? repo : "Repositorio no especificado";
+
+    async function fetchRepoContents() {
+      if (!repo) return;
+
+      try {
+        const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Breadcrumb (ruta)
+        renderBreadcrumb();
+
+        if (response.status !== 200) {
+          contentEl.innerHTML = `<p class='text-red-600'>Error: No se pudo obtener el contenido (${response.status}).</p>`;
+          return;
+        }
+
+        // Si es archivo
+        if (data.type === "file") {
+          renderFile(data);
+        }
+        // Si es carpeta
+        else if (Array.isArray(data)) {
+          renderDirectory(data);
+        }
+      } catch (error) {
+        console.error(error);
+        contentEl.innerHTML = `<p class='text-red-600'>Error al cargar el repositorio.</p>`;
+      }
+    }
+
+    // Renderiza una carpeta
+    function renderDirectory(items) {
+      let html = "<ul class='divide-y'>";
+      for (const file of items) {
+        const icon = file.type === "dir" ? "📁" : "📄";
+        const nextUrl = `viewProject.html?repo=${repo}&path=${file.path}`;
+        html += `
+          <li class="py-2 flex justify-between items-center">
+            <a href="${nextUrl}" class="text-blue-600 hover:underline flex items-center">
+              <span class="mr-2">${icon}</span>${file.name}
+            </a>
+          </li>`;
+      }
+      html += "</ul>";
+      contentEl.innerHTML = html;
+    }
+
+    // Renderiza un archivo
+    async function renderFile(file) {
+      const res = await fetch(file.download_url);
+      const text = await res.text();
+
+      const ext = file.name.split(".").pop();
+      const lang = ["js", "html", "css", "json", "py"].includes(ext) ? ext : "markup";
+
+      contentEl.innerHTML = `
+        <div class="mb-4">
+          <button onclick="goBack()" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 text-sm">← Volver</button>
+        </div>
+        <h2 class="text-lg font-semibold mb-2">${file.name}</h2>
+        <pre class="rounded overflow-auto"><code class="language-${lang}">${escapeHtml(text)}</code></pre>
+      `;
+      Prism.highlightAll();
+    }
+
+    // Breadcrumb dinámico
+    function renderBreadcrumb() {
+      const parts = path.split("/").filter(Boolean);
+      let breadcrumbHtml = `<a href="viewProject.html?repo=${repo}" class="text-blue-600 hover:underline">Raíz</a>`;
+      let currentPath = "";
+      for (const part of parts) {
+        currentPath += "/" + part;
+        breadcrumbHtml += ` / <a href="viewProject.html?repo=${repo}&path=${currentPath.slice(1)}" class="text-blue-600 hover:underline">${part}</a>`;
+      }
+      breadcrumbEl.innerHTML = breadcrumbHtml;
+    }
+
+    // Función volver (si entraste a un archivo)
+    function goBack() {
+      const parentPath = path.split("/").slice(0, -1).join("/");
+      window.location.href = `viewProject.html?repo=${repo}&path=${parentPath}`;
+    }
+
+    // Escapar HTML
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    fetchRepoContents();
+  </script>
+</body>
+</html>

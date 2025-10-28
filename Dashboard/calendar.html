@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario de Pagos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <style>
+    /* Estilos existentes */
+
+    /* Papelera para eliminar arrastrando */
+    .trash {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 64px;
+      height: 64px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      z-index: 9999;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: transform .12s ease, background .12s ease;
+      cursor: default;
+      user-select: none;
+    }
+    .trash.active {
+      transform: scale(1.06);
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white h-screen shadow-md fixed">
+    <div class="p-6 text-2xl font-bold text-blue-600">Amelo Studio</div>
+    <nav class="mt-10">
+      <a href="mainboard.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
+      <a href="#" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
+      <a href="config.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Configuración</a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="ml-64 p-8">
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-700">Calendario de Pagos</h1>
+      <button id="addPaymentBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Agregar Fecha</button>
+    </header>
+
+    <div id="calendar" class="bg-white p-4 rounded shadow"></div>
+    <!-- Papelera: arrastra aquí para eliminar evento -->
+    <div id="trash" class="trash" title="Arrastra aquí para eliminar">🗑️</div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const trashEl = document.getElementById('trash');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          height: 'auto',
+          dayMaxEventRows: true,
+          navLinks: true,
+          selectable: true,
+          editable: true,
+          // eventos con id único (necesario para eliminar correctamente)
+          events: [
+              { id: 'evt-20251115-1', title: 'Juan Pérez - Pago 15/11', start: '2025-11-15', color: '#34D399' },
+              { id: 'evt-20251120-1', title: 'María López - Pago 20/11', start: '2025-11-20', color: '#FBBF24' },
+              { id: 'evt-20251122-1', title: 'Cliente X - Pago 22/11', start: '2025-11-22', color: '#60A5FA' }
+          ],
+
+          // cuando se inicia el drag de un evento, resaltamos la papelera
+          eventDragStart: function(info) {
+            if (trashEl) trashEl.classList.add('active');
+          },
+
+          // cuando se suelta el evento, comprobamos si fue soltado sobre la papelera
+          eventDragStop: function(info) {
+            if (!trashEl) return;
+            // obtener coordenadas del pointer (soporta touch y mouse)
+            const jsEvent = info.jsEvent || {};
+            const clientX = jsEvent.clientX || (jsEvent.touches && jsEvent.touches[0] && jsEvent.touches[0].clientX);
+            const clientY = jsEvent.clientY || (jsEvent.touches && jsEvent.touches[0] && jsEvent.touches[0].clientY);
+
+            const rect = trashEl.getBoundingClientRect();
+            // quitar la clase activa
+            trashEl.classList.remove('active');
+
+            if (typeof clientX === 'number' && typeof clientY === 'number') {
+              const inside = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+              if (inside) {
+                const name = info.event.title || '';
+                if (confirm(`¿Eliminar evento "${name}"?`)) {
+                  // eliminar usando el id (más fiable)
+                  const ev = info.event.id ? calendar.getEventById(info.event.id) : null;
+                  if (ev && typeof ev.remove === 'function') {
+                    ev.remove();
+                  } else if (typeof info.event.remove === 'function') {
+                    info.event.remove();
+                  }
+                  // forzar render para evitar restos visuales
+                  calendar.render();
+                }
+              }
+            }
+          },
+
+          // Personalizamos cómo se muestra cada evento
+          eventContent: function(info) {
+            const container = document.createElement('div');
+            container.classList.add('flex', 'justify-between', 'items-center');
+
+            const title = document.createElement('span');
+            title.innerText = info.event.title;
+
+            const btn = document.createElement('button');
+            btn.innerText = '✕';
+            btn.classList.add('ml-2', 'text-red-600', 'font-bold');
+            btn.style.border = 'none';
+            btn.style.background = 'transparent';
+            btn.style.cursor = 'pointer';
+
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation(); // evita que el click afecte al evento principal
+              if (confirm(`¿Eliminar evento "${info.event.title}"?`)) {
+                // eliminar por id cuando exista y forzar render
+                const ev = info.event.id ? calendar.getEventById(info.event.id) : null;
+                if (ev && typeof ev.remove === 'function') ev.remove();
+                else if (typeof info.event.remove === 'function') info.event.remove();
+                calendar.render();
+              }
+            });
+
+            container.appendChild(title);
+            container.appendChild(btn);
+
+            return { domNodes: [container] };
+          }
+        });
+
+        calendar.render();
+
+        // Agregar evento
+        const addBtn = document.getElementById('addPaymentBtn');
+        addBtn.addEventListener('click', () => {
+          const cliente = prompt("Nombre del Cliente:");
+          if (!cliente) return;
+
+          const fecha = prompt("Fecha del pago (YYYY-MM-DD):");
+          if (!fecha) return;
+
+          const color = prompt("Color del evento (ej. #34D399) o deja vacío para default:", "#60A5FA");
+
+          // generar id único para el nuevo evento
+          const newId = 'evt-' + Date.now();
+          calendar.addEvent({
+            id: newId,
+            title: `${cliente} - Pago`,
+            start: fecha,
+            color: color || '#60A5FA'
+          });
+        });
+      });
+    </script>
+
+  </div>
+</body>
+</html>
