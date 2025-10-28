@@ -44,6 +44,95 @@
       cursor: pointer;
       font-size: 18px;
     }
+
+    /* Modern action menu & badges */
+    .card-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .badge { padding:4px 8px; border-radius:999px; font-size:12px; color:#fff; }
+    .badge.gray { background:#6b7280; } /* en progreso */
+    .badge.blue { background:#2563eb; } /* terminado */
+    .badge.green { background:#16a34a; } /* pagado */
+    .badge.yellow { background:#d97706; } /* no pagado */
+
+    .card-actions { position:relative; }
+    .action-btn {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      color: #374151;
+    }
+    .action-list {
+      position: absolute;
+      right: 0;
+      top: 28px;
+      background: #fff;
+      border: 1px solid rgba(15,23,42,0.06);
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+      min-width: 180px;
+      display: none;
+      z-index: 50;
+      overflow: hidden;
+    }
+    .action-list.open { display: block; }
+    .action-list button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      color: #111827;
+    }
+    .action-list button:hover { background: #f8fafc; }
+
+    /* Mobile tweaks for cards, badges, actions and filters */
+    @media (max-width: 640px) {
+      /* Make card header stack vertically */
+      .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .card-header > div:first-child { /* title block full width */
+        width: 100%;
+      }
+      /* Actions row aligned right but full-width container */
+      .card-actions { width: 100%; display:flex; justify-content:flex-end; }
+      .action-btn { font-size: 20px; padding: 8px; }
+      /* Show action list as full-width block below the button on mobile */
+      .action-list {
+        position: static;
+        right: auto;
+        top: auto;
+        margin-top: 8px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: none;
+        border: 1px solid rgba(15,23,42,0.06);
+      }
+      .action-list button { padding: 12px 14px; font-size: 15px; }
+
+      /* Smaller badges, better spacing */
+      .badge { font-size: 11px; padding: 3px 8px; }
+
+      /* Filters: allow wrapping and full-width inputs */
+      .mb-6 .flex.items-center { flex-wrap: wrap; gap: 8px; }
+      #filterSelect, #searchInput { min-width: 120px; }
+      @media (max-width: 420px) {
+        #filterSelect, #searchInput { width: 100%; min-width: 0; }
+        .mb-6 { gap: 10px; }
+      }
+
+      /* Card text slightly larger for readability on touch */
+      .card-header h3 { font-size: 1.05rem; }
+      .card-header p { font-size: 0.95rem; }
+    }
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -100,9 +189,20 @@
     </div>
   </section>
 
-  <!-- Agregar cliente -->
-  <div class="mb-6 flex justify-between items-center">
-    <h2 class="text-2xl font-semibold text-gray-700">Clientes</h2>
+  <!-- Agregar cliente + filtros -->
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <h2 class="text-2xl font-semibold text-gray-700 mr-2">Clientes</h2>
+      <select id="filterSelect" class="border rounded p-2 text-sm">
+        <option value="all">Mostrar: Todos</option>
+        <option value="completed">Terminados</option>
+        <option value="not_completed">No terminados</option>
+        <option value="paid">Pagados</option>
+        <option value="not_paid">No pagados</option>
+      </select>
+      <input id="searchInput" type="text" placeholder="Buscar cliente o proyecto..." class="border rounded p-2 text-sm ml-2" />
+      <button id="clearFiltersBtn" class="ml-2 px-3 py-2 rounded bg-gray-200 text-sm">Limpiar</button>
+    </div>
     <button id="addClientBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Agregar Cliente</button>
   </div>
 
@@ -120,6 +220,11 @@
       <input type="text" id="nextPayment" placeholder="Próximo pago (dd/mm/yyyy)" class="p-2 border rounded">
       <input type="number" id="paymentAmount" placeholder="Precio a pagar" class="p-2 border rounded" required step="0.01">
       <input type="number" id="ameloAmount" placeholder="Monto que va a Amelo" class="p-2 border rounded" required step="0.01">
+      <!-- Nuevo: estado de proyecto -->
+      <label class="flex items-center gap-2">
+        <input type="checkbox" id="projectCompleted" />
+        Proyecto terminado
+      </label>
       <textarea id="notes" placeholder="Notas" class="p-2 border rounded"></textarea>
       <div class="flex justify-end gap-2 mt-2">
         <button type="button" id="closeClientModal" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancelar</button>
@@ -164,6 +269,11 @@
   const clientForm = document.getElementById('clientForm');
   const modalTitle = document.getElementById('modalTitle');
 
+  // nuevos elementos de filtro/búsqueda
+  const filterSelect = document.getElementById('filterSelect');
+  const searchInput = document.getElementById('searchInput');
+  const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
   let clients = [];
   let editKey = null;
 
@@ -200,8 +310,9 @@
     const nextPayment = document.getElementById('nextPayment').value || 'No definido';
     const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
     const ameloAmount = parseFloat(document.getElementById('ameloAmount').value);
+    const completed = !!document.getElementById('projectCompleted').checked;
     const notes = document.getElementById('notes').value;
-    const clientData = { name, project, repo, nextPayment, paymentAmount, ameloAmount, notes, paid: false };
+    const clientData = { name, project, repo, nextPayment, paymentAmount, ameloAmount, notes, paid: false, completed };
 
     if(editKey) {
       clientsRef.child(editKey).set(clientData);
@@ -233,38 +344,95 @@
     document.getElementById('nextPayment').value = c.nextPayment;
     document.getElementById('paymentAmount').value = c.paymentAmount;
     document.getElementById('ameloAmount').value = c.ameloAmount;
+    document.getElementById('projectCompleted').checked = !!c.completed;
     document.getElementById('notes').value = c.notes;
     clientModal.classList.remove('hidden');
     clientModal.classList.add('flex');
   }
 
+  // Alternar estado "Proyecto terminado"
+  function toggleCompleted(index) {
+    const c = clients[index];
+    const newState = !c.completed;
+    clientsRef.child(c.key).update({ completed: newState });
+  }
+  window.toggleCompleted = toggleCompleted; // exponer para onclick en HTML generado
+
+  // Alternar estado "Pagado / No Pagado"
   function togglePaid(index) {
     const c = clients[index];
-    clientsRef.child(c.key).update({ paid: !c.paid });
+    if (!c) return;
+    const newPaid = !c.paid;
+    clientsRef.child(c.key).update({ paid: newPaid });
   }
+  window.togglePaid = togglePaid;
 
+  // Reemplazar renderClients con diseño más moderno (menos botones visibles)
   function renderClients() {
     clientContainer.innerHTML = "";
     let totalRev = 0, ameloRev = 0, pending = 0;
+
+    // obtener filtros actuales
+    const filter = filterSelect ? filterSelect.value : 'all';
+    const q = searchInput && searchInput.value ? searchInput.value.trim().toLowerCase() : '';
+
+    // recorrer con índices originales para mantener mapping de acciones
     clients.forEach((c, index) => {
+      // calculos globales (estadísticas)
+      if (c.paid) {
+        totalRev += c.paymentAmount || 0;
+        ameloRev += c.ameloAmount || 0;
+      } else {
+        pending++;
+      }
+
+      // aplicar filtro por tipo
+      if (filter === 'completed' && !c.completed) return;
+      if (filter === 'not_completed' && c.completed) return;
+      if (filter === 'paid' && !c.paid) return;
+      if (filter === 'not_paid' && c.paid) return;
+
+      // aplicar búsqueda por nombre o proyecto
+      if (q) {
+        const hay = (c.name || '').toLowerCase().includes(q) || (c.project || '').toLowerCase().includes(q);
+        if (!hay) return;
+      }
+
       const card = document.createElement('div');
       card.className = "bg-white p-6 rounded shadow hover:shadow-lg transition relative";
-      totalRev += c.paymentAmount || 0;
-      ameloRev += c.ameloAmount || 0;
-      if(!c.paid) pending++;
+
+      const paidLabel = c.paid ? 'Pagado' : 'No Pagado';
+      const paidBadgeClass = c.paid ? 'badge green' : 'badge yellow';
+      const completedLabel = c.completed ? 'Terminado' : 'En progreso';
+      const completedBadgeClass = c.completed ? 'badge blue' : 'badge gray';
 
       card.innerHTML = `
-        <h2 class="text-xl font-semibold text-gray-800">Cliente: ${c.name}</h2>
-        <p class="mt-2 text-gray-600">Proyecto: ${c.project}</p>
-        <p class="mt-1 text-gray-600">Próximo pago: ${c.nextPayment}</p>
-        <p class="mt-1 text-gray-600">Pago: $${c.paymentAmount.toFixed(2)}</p>
-        <p class="mt-1 text-gray-600">Amelo: $${c.ameloAmount.toFixed(2)}</p>
-        <p class="mt-2 text-gray-500 text-sm">Notas: ${c.notes || 'Ninguna'}</p>
-        <div class="mt-4 flex gap-2">
-          <a href="viewProject.html?repo=${encodeURIComponent(c.repo)}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Ver Proyecto</a>
-          <button onclick="editClient(${index})" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Editar</button>
-          <button onclick="togglePaid(${index})" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">${c.paid ? 'No Pagado' : 'Pagado'}</button>
-          <button onclick="deleteClient(${index})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
+        <div class="card-header">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Cliente: ${c.name}</h3>
+            <p class="text-sm text-gray-600">${c.project}</p>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="${completedBadgeClass}">${completedLabel}</span>
+            <span class="${paidBadgeClass}">${paidLabel}</span>
+
+            <div class="card-actions">
+              <button class="action-btn" data-index="${index}" aria-expanded="false" title="Acciones">⋮</button>
+              <div class="action-list" data-index="${index}" aria-hidden="true">
+                <button data-action="edit" data-index="${index}">✏️ Editar</button>
+                <button data-action="togglePaid" data-index="${index}">${c.paid ? '↩️ Marcar No Pagado' : '✅ Marcar Pagado'}</button>
+                <button data-action="toggleCompleted" data-index="${index}">${c.completed ? '↩️ Marcar No terminado' : '🏁 Marcar terminado'}</button>
+                <button data-action="delete" data-index="${index}" style="color:#dc2626">🗑️ Eliminar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-600">
+          <p>Próximo pago: ${c.nextPayment}</p>
+          <p>Pago: $${c.paymentAmount.toFixed(2)} · Amelo: $${c.ameloAmount.toFixed(2)}</p>
+          <p class="mt-2 text-gray-500">Notas: ${c.notes || 'Ninguna'}</p>
         </div>
       `;
       clientContainer.appendChild(card);
@@ -275,6 +443,48 @@
     ameloRevenue.textContent = `$${ameloRev.toFixed(2)}`;
     pendingPayments.textContent = pending;
   }
+
+  // Delegación: manejar clicks en el menú de acciones
+  document.addEventListener('click', function(e){
+    // Toggle action list
+    const actionBtn = e.target.closest('.action-btn');
+    if (actionBtn) {
+      const idx = actionBtn.getAttribute('data-index');
+      const list = document.querySelector('.action-list[data-index="'+idx+'"]');
+      if (list) {
+        const open = list.classList.toggle('open');
+        list.setAttribute('aria-hidden', open ? 'false' : 'true');
+      }
+      // close other menus
+      document.querySelectorAll('.action-list').forEach(l=>{
+        if (l.getAttribute('data-index') !== idx) { l.classList.remove('open'); l.setAttribute('aria-hidden','true'); }
+      });
+      return;
+    }
+
+    // Action item clicked
+    const act = e.target.closest('.action-list button');
+    if (act) {
+      const action = act.getAttribute('data-action');
+      const idx = parseInt(act.getAttribute('data-index'), 10);
+      if (typeof idx === 'number' && !isNaN(idx)) {
+        if (action === 'edit') editClient(idx);
+        else if (action === 'togglePaid') togglePaid(idx);
+        else if (action === 'toggleCompleted') toggleCompleted(idx);
+        else if (action === 'delete') {
+          if (confirm('¿Eliminar este cliente?')) deleteClient(idx);
+        }
+      }
+      // close all menus
+      document.querySelectorAll('.action-list').forEach(l=> { l.classList.remove('open'); l.setAttribute('aria-hidden','true'); });
+      return;
+    }
+
+    // Click fuera: cerrar menús
+    if (!e.target.closest('.card-actions')) {
+      document.querySelectorAll('.action-list').forEach(l=> { l.classList.remove('open'); l.setAttribute('aria-hidden','true'); });
+    }
+  });
 
   // mobile sidebar toggle for mainboard
   (function(){
@@ -327,6 +537,22 @@
   // Logout
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) logoutBtn.addEventListener('click', () => window.location.href = '../index.html');
+
+  // debounce helper para search
+  function debounce(fn, wait) {
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(()=> fn(...args), wait); };
+  }
+
+  // limpiar filtros
+  if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', () => {
+    if (filterSelect) filterSelect.value = 'all';
+    if (searchInput) searchInput.value = '';
+    renderClients();
+  });
+
+  if (filterSelect) filterSelect.addEventListener('change', () => renderClients());
+  if (searchInput) searchInput.addEventListener('input', debounce(()=> renderClients(), 250));
 </script>
 </body>
 </html>
