@@ -69,7 +69,27 @@
       box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
     @media (max-width: 700px) {
-      .lang-btn { display: none; } /* aparece dentro del menú si lo quieres visible en móvil */
+      /* Mostrar botón de idioma también en móvil */
+      .lang-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+
+      /* Ocultar menú de navegación en móvil */
+      .navbar,
+      .nav-open-btn,
+      .overlay,
+      .navbar-top,
+      .navbar-list {
+        display: none !important;
+      }
+      /* Ajuste opcional: mantener logo y botón idioma visibles */
+      .header .container { display: flex; align-items: center; gap: 8px; }
+      .logo { flex: 0 0 auto; }
     }
   </style>
 
