@@ -14,6 +14,41 @@
 
   <link rel="stylesheet" href="style.css">
 
+  <!-- Nuevo: estilos para el botón flotante -->
+  <style>
+    .whatsapp-float {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 56px;
+      height: 56px;
+      background: #25D366;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(37,211,102,0.24);
+      z-index: 9999;
+      text-decoration: none;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .whatsapp-float:hover,
+    .whatsapp-float:focus {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(37,211,102,0.2);
+      outline: none;
+    }
+    .whatsapp-float ion-icon {
+      font-size: 24px;
+      color: #fff;
+    }
+    @media (max-width: 420px) {
+      .whatsapp-float { right: 14px; bottom: 14px; width: 48px; height: 48px; }
+      .whatsapp-float ion-icon { font-size: 20px; }
+    }
+  </style>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Source+Sans+Pro:wght@600;700&display=swap" rel="stylesheet">
@@ -157,34 +192,40 @@
                         <ion-icon name="laptop-outline"></ion-icon>
                     </div>
                 <h3 class="h3 title">Página Web Básica</h3>
-    <p class="text">Amelo Studio desarrolla sitios web completos desde cero, adaptados a cada necesidad. 
-                    El equipo ofrece un diseño limpio, rápido y funcional, compatible con cualquier dispositivo.</p>
+    <p class="text">Desarrollo de sitios web básicos completos desde cero, adaptados a cada necesidad. 
+                    Ofrecemos un diseño limpio, rápido y funcional, compatible con cualquier dispositivo.</p>
     <ul>
       <li>Hasta 4 secciones personalizadas</li>
       <li>Adaptado a móviles y dispositivos variados</li>
       <li>Diseño moderno, limpio y rápido</li>
+        <li>Optimización básica SEO incluida</li>
     </ul>
 
     <h4 class="price"> Precio: Desde 100$</h4>
   </div>
             </li>
 
-            <li>
-              <div class="service-card">
-                <div class="card-icon">
-                  <ion-icon name="laptop-outline"></ion-icon>
-                </div>
-                <h3 class="h3 title">Página Web con Base de Datos</h3>
-                <p class="text">Pensado para sitios que requieren interacción dinámica como formularios, registros o paneles administrativos. Amelo Studio desarrolla el backend y estructura funciones para que los clientes puedan manejar su información fácilmente.</p>
-                <ul>
-                  <li>Registro de usuarios, edición y gestión</li>
-                  <li>Paneles de administración</li>
-                  <li>Integración segura</li>
-                </ul>
+                <li>
+                <!-- Tarjeta 1: Página Web Básica -->
+                <div class="service-card">
+                    <div class="card-icon">
+                        <ion-icon name="laptop-outline"></ion-icon>
+                    </div>
+                <h3 class="h3 title">Sitio Web multi-pagina</h3>
+    <p class="text">Desarrollo de sitios web completos y profesionales, con varias secciones y menús, adaptados a tus necesidades. 
+                   Ofrecemos un diseño moderno, funcional y responsive, ideal para empresas y proyectos que necesitan presencia completa en línea.</p>
+    <ul>
+    <li>Hasta 8 secciones personalizadas</li>
+  <li>Menú de navegación completo</li>
+  <li>Compatible con móviles y todos los dispositivos</li>
+  <li>Optimización básica SEO incluida</li>
+    </ul>
 
-                <h4 class="price"> Precio: Desde 150$</h4>
-              </div>
+    <h4 class="price"> Precio: Desde 150$</h4>
+  </div>
             </li>
+
+
 
             <li>
               <div class="service-card">
@@ -227,34 +268,17 @@
       <ion-icon name="server-outline"></ion-icon>
     </div>
     <h3 class="h3 title">Servicios de Bases de Datos</h3>
-  <p class="text">El equipo diseña y gestiona bases de datos estructuradas que permiten almacenar, consultar y controlar información. También puede integrarlas a páginas web o apps, y crear interfaces visuales para administrarlas fácilmente.</p>
+  <p class="text">Se diseña y gestiona bases de datos estructuradas que permiten almacenar, consultar y controlar información. También puede integrarlas a páginas web o apps, y crear interfaces visuales para administrarlas fácilmente. <b>Este servicio se le suma como uno adicional a cualquiera de nuestros dos servicios de sitios web</b></p>
     <ul>
       <li>Paneles de gestión a medida</li>
       <li>Acceso seguro y organizado</li>
       <li>Visualización de datos en tiempo real</li>
     </ul>
 
-    <h4 class="price"> Precio: Desde 80$</h4>
+    <h4 class="price"> Precio: Desde 50$</h4>
   </div>
             </li>
 
-            <li>
-              <!-- Tarjeta 6: Configuración de Hosting -->
-  <div class="service-card">
-    <div class="card-icon">
-      <ion-icon name="settings-outline"></ion-icon>
-    </div>
-    <h3 class="h3 title">Configuración de Hosting</h3>
-  <p class="text">¿Tienes tu propio dominio y hosting pero necesitas ayuda técnica? Amelo Studio configura todo el sistema para que tu sitio web funcione perfectamente. El cliente mantiene el control total de sus servicios.</p>
-    <ul>
-      <li>Configuro completamente el servidor</li>
-      <li>Instalo y optimizo todo</li>
-      <li>Mantienes control del dominio/hosting</li>
-      <li>Incluyo soporte técnico inicial</li>
-    </ul>
-    <h4 class="price"> Precio: Desde 5$</h4>
-  </div>
-            </li>
 
             <li>
               <!-- Tarjeta 7: Hosting Administrado -->
@@ -445,6 +469,11 @@ Tu hogar lejos de casa. Amplia, cómoda y perfectamente ubicada para disfrutar d
     </div>
   </footer>
   
+  <!-- Nuevo: botón flotante de WhatsApp -->
+  <a class="whatsapp-float" href="https://wa.me/19392312803" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+    <ion-icon name="logo-whatsapp"></ion-icon>
+  </a>
+
   <script src="script.js"></script>
 
 </body>
