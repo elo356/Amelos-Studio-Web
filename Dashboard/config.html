@@ -7,11 +7,45 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Añadido: estilos responsive para sidebar (igual que mainboard) -->
+  <style>
+    #sidebar { transition: transform .25s ease; }
+    @media (max-width: 900px) {
+      #sidebar { transform: translateX(-100%); position: fixed; left:0; top:0; bottom:0; z-index:40;}
+      #sidebar.open { transform: translateX(0); }
+      #sidebar.pinned { transform: translateX(0); }
+      #mainContent { margin-left: 0 !important; padding: 1rem !important; }
+      .mobile-tap { padding: 12px; font-size: 16px; }
+    }
+    .sidebar-tab {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #0f172a;
+      color: #fff;
+      width: 42px;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      z-index: 10002;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .sidebar-pin-btn { background: transparent; border: none; color: inherit; cursor: pointer; font-size: 18px; }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
-<aside class="w-64 bg-white h-screen shadow-md fixed">
-  <div class="p-6 text-2xl font-bold text-blue-600">Amelo Studio</div>
+<aside id="sidebar" class="w-64 bg-white h-screen shadow-md fixed">
+  <div class="p-6 text-2xl font-bold text-blue-600 flex items-center justify-between">
+    <span>Amelo Studio</span>
+    <button id="sidebarPinBtn" class="sidebar-pin-btn" title="Fijar menú">📌</button>
+  </div>
   <nav class="mt-10">
     <a href="mainboard.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
     <a href="calendar.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
@@ -19,9 +53,14 @@
   </nav>
 </aside>
 
-<div class="ml-64 p-8">
+<button id="sidebarTab" class="sidebar-tab md:hidden" aria-label="Abrir menú">☰</button>
+
+<div id="mainContent" class="ml-64 p-8">
   <header class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-700">Configuración</h1>
+    <div class="flex items-center gap-4">
+      <button id="mobileMenuBtn" class="md:hidden p-2 rounded bg-gray-100 mobile-tap" aria-label="Abrir menú">☰</button>
+      <h1 class="text-3xl font-bold text-gray-700">Configuración</h1>
+    </div>
     <div>
       <span class="mr-4 font-medium" id="currentUserDisplay">Admin</span>
       <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cerrar sesión</button>
@@ -198,6 +237,53 @@
   logoutBtn?.addEventListener('click', () => {
     window.location.href = '../index.html';
   });
+
+  /* Añadido: script para manejar sidebar móvil y pin (comportamiento igual que mainboard) */
+  (function(){
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const sidebarTab = document.getElementById('sidebarTab');
+    const sidebarPinBtn = document.getElementById('sidebarPinBtn');
+
+    // pin state from localStorage
+    const pinned = localStorage.getItem('sidebar_pinned') === '1';
+    if (pinned && sidebar) sidebar.classList.add('open','pinned');
+
+    if(mobileBtn && sidebar) {
+      mobileBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+      main.addEventListener('click', ()=> { 
+        if(window.innerWidth <= 900 && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) sidebar.classList.remove('open'); 
+      });
+    }
+
+    // sidebar tab opens/closes sidebar
+    if (sidebarTab) {
+      sidebarTab.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+    }
+    
+    // pin/unpin sidebar
+    if (sidebarPinBtn) {
+      const setPinned = (state) => {
+        if (state) {
+          sidebar.classList.add('pinned','open');
+          localStorage.setItem('sidebar_pinned','1');
+          sidebarPinBtn.textContent = '📌';
+        } else {
+          sidebar.classList.remove('pinned');
+          localStorage.removeItem('sidebar_pinned');
+          sidebarPinBtn.textContent = '📌';
+        }
+      };
+      sidebarPinBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nowPinned = sidebar.classList.contains('pinned');
+        setPinned(!nowPinned);
+      });
+      // initialize pin button state
+      if (pinned) sidebarPinBtn.classList.add('active');
+    }
+  })();
 </script>
 
 </body>
