@@ -15,7 +15,7 @@
       #sidebar.open { transform: translateX(0); }
       #sidebar.pinned { transform: translateX(0); } /* pinned shows sidebar */
       #mainContent { margin-left: 0 !important; padding: 1rem !important; }
-      .mobile-tap { padding: 12px; font-size: 16px; }
+      .mobile-tap { padding: 12px; font-size: 16px; z-index:10003; } /* añadido z-index global */
     }
 
     /* Sidebar tab (mobile): small handle to open the sidebar */
@@ -144,15 +144,20 @@
     <button id="sidebarPinBtn" class="sidebar-pin-btn" title="Fijar menú">📌</button>
   </div>
   <nav class="mt-10">
-    <a href="#" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
-    <a href="calendar.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
-    <!-- Mostrar solo en md+ -->
-    <a href="config.html" class="hidden md:block py-2.5 px-4 rounded hover:bg-blue-100">Configuración</a>
+    <a href="mainboard.html" class="nav-link block py-2.5 px-4 rounded hover:bg-blue-100" data-href="mainboard.html">Dashboard</a>
+    <a href="calendar.html" class="nav-link block py-2.5 px-4 rounded hover:bg-blue-100" data-href="calendar.html">Calendario</a>
+    <!-- Mostrar también en mobile: eliminar 'hidden' -->
+    <a href="config.html" class="nav-link block py-2.5 px-4 rounded hover:bg-blue-100" data-href="config.html">Configuración</a>
   </nav>
 </aside>
 
-<!-- Sidebar tab: visible en móvil para abrir el menú -->
+<!-- Overlay móvil -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
 
+<!-- Sidebar tab: visible en móvil para abrir el menú -->
+<button id="sidebarTab" class="sidebar-tab md:hidden" aria-label="Abrir menú">☰</button>
+
+<!-- Main content -->
 <div id="mainContent" class="ml-64 p-8">
 
   <!-- Header -->
@@ -170,7 +175,7 @@
   </header>
 
   <!-- Estadísticas -->
-  <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+  <section class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
     <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
       <h2 class="text-lg font-semibold text-gray-600">Clientes Totales</h2>
       <p id="totalClients" class="text-3xl font-bold text-blue-600 mt-2">0</p>
@@ -179,6 +184,13 @@
       <h2 class="text-lg font-semibold text-gray-600">Ganancias Generadas</h2>
       <p id="totalRevenue" class="text-3xl font-bold text-green-600 mt-2">$0</p>
     </div>
+
+    <!-- Nuevo: Fondos actuales (dinero que te queda) -->
+    <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
+      <h2 class="text-lg font-semibold text-gray-600">Fondos actuales</h2>
+      <p id="fundsRemaining" class="text-3xl font-bold text-indigo-600 mt-2">$0</p>
+    </div>
+
     <div class="bg-white p-6 rounded shadow hover:shadow-lg transition text-center">
       <h2 class="text-lg font-semibold text-gray-600">Ganancias Amelo</h2>
       <p id="ameloRevenue" class="text-3xl font-bold text-green-600 mt-2">$0</p>
@@ -256,6 +268,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const clientsRef = db.ref('clients');
+  const expensesRef = db.ref('expenses');
 
   // --- Elementos ---
   const addClientBtn = document.getElementById('addClientBtn');
@@ -264,6 +277,7 @@
   const clientContainer = document.getElementById('clientContainer');
   const totalClients = document.getElementById('totalClients');
   const totalRevenue = document.getElementById('totalRevenue');
+  const fundsRemaining = document.getElementById('fundsRemaining');
   const ameloRevenue = document.getElementById('ameloRevenue');
   const pendingPayments = document.getElementById('pendingPayments');
   const clientForm = document.getElementById('clientForm');
@@ -298,6 +312,25 @@
       client.key = child.key;
       clients.push(client);
     });
+    renderClients();
+  });
+
+  // --- Inicializar suma de gastos ---
+  let expensesSum = 0;
+
+  // --- Cargar gastos y sumar (asegurar número y valor por defecto 0) ---
+  expensesRef.on('value', snapshot => {
+    let sum = 0;
+    if (snapshot.exists()) {
+      snapshot.forEach(child => {
+        const e = child.val() || {};
+        // asegurar que amount es número
+        const a = parseFloat(e.amount);
+        if (!isNaN(a)) sum += a;
+      });
+    }
+    expensesSum = sum || 0;
+    // refrescar vista para recalcular fondos
     renderClients();
   });
 
@@ -441,6 +474,11 @@
     totalClients.textContent = clients.length;
     totalRevenue.textContent = `$${totalRev.toFixed(2)}`;
     ameloRevenue.textContent = `$${ameloRev.toFixed(2)}`;
+
+    // Fondos actuales = Ganancias Amelo - Gastos (según pedido)
+    const funds = Math.max(0, (ameloRev || 0) - (expensesSum || 0));
+    if (fundsRemaining) fundsRemaining.textContent = `$${funds.toFixed(2)}`;
+
     pendingPayments.textContent = pending;
   }
 
@@ -493,34 +531,64 @@
     const main = document.getElementById('mainContent');
     const sidebarTab = document.getElementById('sidebarTab');
     const sidebarPinBtn = document.getElementById('sidebarPinBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    // pin state from localStorage
     const pinned = localStorage.getItem('sidebar_pinned') === '1';
-    if (pinned) sidebar.classList.add('open','pinned');
+    if (pinned && sidebar) sidebar.classList.add('open','pinned');
 
-    if(mobileBtn && sidebar) {
-      mobileBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
-      main.addEventListener('click', ()=> { 
-        if(window.innerWidth <= 900 && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) sidebar.classList.remove('open'); 
+    function openSidebar() {
+      if (!sidebar) return;
+      sidebar.classList.add('open');
+      sidebarOverlay?.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      if (!sidebar) return;
+      if (!sidebar.classList.contains('pinned')) sidebar.classList.remove('open');
+      sidebarOverlay?.classList.add('hidden');
+    }
+    function toggleSidebar() {
+      if (!sidebar) return;
+      if (sidebar.classList.contains('open')) closeSidebar();
+      else openSidebar();
+    }
+
+    // handlers con soporte touch
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', toggleSidebar);
+      mobileBtn.addEventListener('touchstart', (e) => { e.preventDefault(); toggleSidebar(); }, {passive:false});
+    }
+    if (sidebarTab) {
+      sidebarTab.addEventListener('click', toggleSidebar);
+      sidebarTab.addEventListener('touchstart', (e) => { e.preventDefault(); toggleSidebar(); }, {passive:false});
+    }
+    // overlay click/touch cierra
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+    sidebarOverlay?.addEventListener('touchstart', (e)=> { e.preventDefault(); closeSidebar(); }, {passive:false});
+
+    if (main) {
+      main.addEventListener('click', ()=> {
+        if (window.innerWidth <= 900 && sidebar && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) closeSidebar();
       });
     }
 
-    // sidebar tab opens/closes sidebar
-    if (sidebarTab) {
-      sidebarTab.addEventListener('click', ()=> sidebar.classList.toggle('open'));
-    }
-    
-    // pin/unpin sidebar
+    // cerrar sidebar al clicar en cualquier enlace de navegación en mobile
+    const navLinks = document.querySelectorAll('#sidebar .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) closeSidebar();
+        // navegación normal seguirá
+      });
+    });
+
     if (sidebarPinBtn) {
       const setPinned = (state) => {
+        if (!sidebar) return;
         if (state) {
           sidebar.classList.add('pinned','open');
           localStorage.setItem('sidebar_pinned','1');
-          sidebarPinBtn.textContent = '📌';
         } else {
           sidebar.classList.remove('pinned');
           localStorage.removeItem('sidebar_pinned');
-          sidebarPinBtn.textContent = '📌';
         }
       };
       sidebarPinBtn.addEventListener('click', (e) => {
@@ -528,10 +596,7 @@
         const nowPinned = sidebar.classList.contains('pinned');
         setPinned(!nowPinned);
       });
-      // initialize pin button state
-      if (pinned) sidebarPinBtn.classList.add('active');
     }
-
   })();
 
   // Logout

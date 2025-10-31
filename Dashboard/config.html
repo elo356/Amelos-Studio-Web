@@ -16,7 +16,7 @@
       #sidebar.open { transform: translateX(0); }
       #sidebar.pinned { transform: translateX(0); }
       #mainContent { margin-left: 0 !important; padding: 1rem !important; }
-      .mobile-tap { padding: 12px; font-size: 16px; }
+      .mobile-tap { padding: 12px; font-size: 16px; z-index:10003; } /* añadido z-index global */
     }
     .sidebar-tab {
       position: fixed;
@@ -37,6 +37,18 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
     .sidebar-pin-btn { background: transparent; border: none; color: inherit; cursor: pointer; font-size: 18px; }
+
+    /* Overlay móvil */
+    #sidebarOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      display: none;
+    }
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -47,11 +59,14 @@
     <button id="sidebarPinBtn" class="sidebar-pin-btn" title="Fijar menú">📌</button>
   </div>
   <nav class="mt-10">
-    <a href="mainboard.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Dashboard</a>
-    <a href="calendar.html" class="block py-2.5 px-4 rounded hover:bg-blue-100">Calendario</a>
-    <a href="configuracion.html" class="block py-2.5 px-4 rounded bg-blue-100 font-semibold text-blue-700">Configuración</a>
+    <a href="mainboard.html" class="nav-link block py-2.5 px-4 rounded hover:bg-blue-100" data-href="mainboard.html">Dashboard</a>
+    <a href="calendar.html" class="nav-link block py-2.5 px-4 rounded hover:bg-blue-100" data-href="calendar.html">Calendario</a>
+    <a href="configuracion.html" class="nav-link block py-2.5 px-4 rounded bg-blue-100 font-semibold text-blue-700" data-href="configuracion.html">Configuración</a>
   </nav>
 </aside>
+
+<!-- Overlay móvil -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
 
 <button id="sidebarTab" class="sidebar-tab md:hidden" aria-label="Abrir menú">☰</button>
 
@@ -82,6 +97,40 @@
       </thead>
       <tbody id="userTable"></tbody>
     </table>
+  </section>
+
+  <!-- Nuevo: Gastos -->
+  <section id="expensesSection" class="bg-white p-6 rounded shadow mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-700">Gastos</h2>
+      <button id="addExpenseBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">+ Agregar Gasto</button>
+    </div>
+
+    <!-- Form inline (oculto por defecto) -->
+    <form id="expenseForm" class="hidden flex-col gap-3 mb-4">
+      <div class="flex flex-col md:flex-row gap-2">
+        <input id="expenseDesc" type="text" placeholder="Concepto" class="p-2 border rounded flex-1" required>
+        <input id="expenseAmount" type="number" step="0.01" min="0" placeholder="Monto" class="p-2 border rounded w-40" required>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button type="button" id="cancelExpense" class="px-4 py-2 rounded bg-gray-200">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded bg-red-500 text-white">Guardar Gasto</button>
+      </div>
+    </form>
+
+    <div class="overflow-y-auto max-h-56">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-100 border-b">
+            <th class="py-2 px-4">Fecha</th>
+            <th class="py-2 px-4">Concepto</th>
+            <th class="py-2 px-4 text-right">Monto</th>
+            <th class="py-2 px-4 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="expensesTable"></tbody>
+      </table>
+    </div>
   </section>
 
 
@@ -203,35 +252,133 @@
   });
 
   // --- Contraseña Global ---
-  db.ref('globalPassword').on('value', snapshot => {
-    if(snapshot.exists()) globalPassword.value = snapshot.val();
-  });
+  if (globalPassword) {
+    db.ref('globalPassword').on('value', snapshot => {
+      if(snapshot.exists()) globalPassword.value = snapshot.val();
+    });
+  }
 
-  editPasswordBtn.addEventListener('click', () => {
+  editPasswordBtn?.addEventListener('click', () => {
     if(currentUser.role !== 'admin') return;
-    globalPassword.removeAttribute('disabled');
-    savePasswordBtn.classList.remove('hidden');
-    editPasswordBtn.classList.add('hidden');
+    if (globalPassword) globalPassword.removeAttribute('disabled');
+    savePasswordBtn?.classList.remove('hidden');
+    editPasswordBtn?.classList.add('hidden');
   });
 
-  document.getElementById('passwordForm').addEventListener('submit', e => {
+  document.getElementById('passwordForm')?.addEventListener('submit', e => {
     e.preventDefault();
     if(currentUser.role !== 'admin') return;
-    db.ref('globalPassword').set(globalPassword.value);
-    globalPassword.setAttribute('disabled', true);
-    savePasswordBtn.classList.add('hidden');
-    editPasswordBtn.classList.remove('hidden');
+    if (globalPassword) db.ref('globalPassword').set(globalPassword.value);
+    if (globalPassword) globalPassword.setAttribute('disabled', true);
+    savePasswordBtn?.classList.add('hidden');
+    editPasswordBtn?.classList.remove('hidden');
     alert('Contraseña actualizada exitosamente.');
   });
 
   // --- Permisos para botones según rol ---
   function updatePermissions() {
     if(currentUser.role !== 'admin') {
-      editPasswordBtn.setAttribute('disabled', true);
-      editPasswordBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      if (editPasswordBtn) {
+        editPasswordBtn.setAttribute('disabled', true);
+        editPasswordBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
     }
   }
   updatePermissions();
+
+  // --- Expenses (Gastos) ---
+  const addExpenseBtn = document.getElementById('addExpenseBtn');
+  const expenseForm = document.getElementById('expenseForm');
+  const cancelExpense = document.getElementById('cancelExpense');
+  const expenseDesc = document.getElementById('expenseDesc');
+  const expenseAmount = document.getElementById('expenseAmount');
+  const expensesTable = document.getElementById('expensesTable');
+
+  const expensesRef = db.ref('expenses');
+
+  // Mostrar formulario (solo admin)
+  function updateExpenseUIPermissions() {
+    if (!currentUser || currentUser.role !== 'admin') {
+      addExpenseBtn.setAttribute('disabled', 'true');
+      addExpenseBtn.classList.add('opacity-50','cursor-not-allowed');
+    } else {
+      addExpenseBtn.removeAttribute('disabled');
+      addExpenseBtn.classList.remove('opacity-50','cursor-not-allowed');
+    }
+  }
+  updateExpenseUIPermissions();
+
+  addExpenseBtn?.addEventListener('click', () => {
+    if (currentUser.role !== 'admin') return;
+    expenseForm.classList.remove('hidden');
+    expenseForm.classList.add('flex');
+    expenseDesc.focus();
+  });
+  cancelExpense?.addEventListener('click', () => {
+    expenseForm.classList.add('hidden');
+    expenseForm.classList.remove('flex');
+    expenseForm.reset?.();
+  });
+
+  // Guardar gasto en Firebase
+  expenseForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    if (currentUser.role !== 'admin') return;
+    const desc = (expenseDesc.value || '').trim();
+    const amount = parseFloat(expenseAmount.value) || 0;
+    if (!desc || amount <= 0) return;
+    const expense = {
+      description: desc,
+      amount: amount,
+      createdAt: Date.now(),
+      createdBy: currentUser.username
+    };
+    expensesRef.push(expense);
+    // limpiar UI
+    expenseForm.reset();
+    expenseForm.classList.add('hidden');
+    expenseForm.classList.remove('flex');
+  });
+
+  // Renderizar gastos en lista
+  function renderExpenses(data) {
+    expensesTable.innerHTML = '';
+    if (!data) return;
+    // convertir objeto a array con key
+    const rows = Object.keys(data).map(k => ({ key: k, ...data[k] }))
+      .sort((a,b)=> b.createdAt - a.createdAt);
+    for (const item of rows) {
+      const tr = document.createElement('tr');
+      tr.classList.add('border-b');
+      const date = new Date(item.createdAt).toLocaleString();
+      const canDelete = currentUser.role === 'admin';
+      tr.innerHTML = `
+        <td class="py-2 px-4">${date}</td>
+        <td class="py-2 px-4">${item.description}</td>
+        <td class="py-2 px-4 text-right">$${(item.amount||0).toFixed(2)}</td>
+        <td class="py-2 px-4 text-right">
+          ${canDelete ? `<button class="text-red-500 hover:underline delete-expense" data-key="${item.key}">Eliminar</button>` : ''}
+        </td>
+      `;
+      expensesTable.appendChild(tr);
+    }
+  }
+
+  // Escuchar cambios en expenses
+  expensesRef.on('value', snapshot => {
+    const val = snapshot.exists() ? snapshot.val() : null;
+    renderExpenses(val);
+  });
+
+  // Eliminar gasto (solo admin)
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('delete-expense')) {
+      if (currentUser.role !== 'admin') return;
+      const key = e.target.getAttribute('data-key');
+      if (!key) return;
+      if (confirm('¿Eliminar este gasto?')) expensesRef.child(key).remove();
+    }
+  });
 
   // Logout
   logoutBtn?.addEventListener('click', () => {
@@ -245,34 +392,62 @@
     const main = document.getElementById('mainContent');
     const sidebarTab = document.getElementById('sidebarTab');
     const sidebarPinBtn = document.getElementById('sidebarPinBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
     // pin state from localStorage
     const pinned = localStorage.getItem('sidebar_pinned') === '1';
     if (pinned && sidebar) sidebar.classList.add('open','pinned');
 
-    if(mobileBtn && sidebar) {
-      mobileBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
-      main.addEventListener('click', ()=> { 
-        if(window.innerWidth <= 900 && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) sidebar.classList.remove('open'); 
+    function openSidebar() {
+      if (!sidebar) return;
+      sidebar.classList.add('open');
+      sidebarOverlay?.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      if (!sidebar) return;
+      if (!sidebar.classList.contains('pinned')) sidebar.classList.remove('open');
+      sidebarOverlay?.classList.add('hidden');
+    }
+    function toggleSidebar() {
+      if (!sidebar) return;
+      if (sidebar.classList.contains('open')) closeSidebar();
+      else openSidebar();
+    }
+
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', toggleSidebar);
+      mobileBtn.addEventListener('touchstart', (e) => { e.preventDefault(); toggleSidebar(); }, {passive:false});
+    }
+    if (sidebarTab) {
+      sidebarTab.addEventListener('click', toggleSidebar);
+      sidebarTab.addEventListener('touchstart', (e) => { e.preventDefault(); toggleSidebar(); }, {passive:false});
+    }
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+    sidebarOverlay?.addEventListener('touchstart', (e)=> { e.preventDefault(); closeSidebar(); }, {passive:false});
+
+    if (main) {
+      main.addEventListener('click', ()=> {
+        if (window.innerWidth <= 900 && sidebar && sidebar.classList.contains('open') && !sidebar.classList.contains('pinned')) closeSidebar();
       });
     }
 
-    // sidebar tab opens/closes sidebar
-    if (sidebarTab) {
-      sidebarTab.addEventListener('click', ()=> sidebar.classList.toggle('open'));
-    }
-    
-    // pin/unpin sidebar
+    // cerrar sidebar al clicar en cualquier enlace de navegación en mobile
+    const navLinks = document.querySelectorAll('#sidebar .nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) closeSidebar();
+      });
+    });
+
     if (sidebarPinBtn) {
       const setPinned = (state) => {
+        if (!sidebar) return;
         if (state) {
           sidebar.classList.add('pinned','open');
           localStorage.setItem('sidebar_pinned','1');
-          sidebarPinBtn.textContent = '📌';
         } else {
           sidebar.classList.remove('pinned');
           localStorage.removeItem('sidebar_pinned');
-          sidebarPinBtn.textContent = '📌';
         }
       };
       sidebarPinBtn.addEventListener('click', (e) => {
@@ -280,8 +455,6 @@
         const nowPinned = sidebar.classList.contains('pinned');
         setPinned(!nowPinned);
       });
-      // initialize pin button state
-      if (pinned) sidebarPinBtn.classList.add('active');
     }
   })();
 </script>
