@@ -286,6 +286,12 @@ body {
   gap: 30px;
 }
 
+/* Coloca el logo (contenedor .logo-wrapper) al extremo derecho en el header */
+.logo-wrapper { margin-left: -12px !important; order: -1 !important; transform: translateX(-4px); }
+/* Ensure nav and buttons stay after the logo in the flex order */
+.navbar, .nav-open-btn, .lang-btn { order: 1; }
+
+
 .logo {
   color: var(--color);
   font-family: var(--ff-source-sans-pro);
@@ -321,12 +327,23 @@ body {
 .navbar-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  filter: brightness(0) invert(1);
   padding-block: 10px 30px;
+/* When the header is active (scrolled) show navbar with white background
+   and make the logo appear solid black */
+.header.active {
+  background-color: var(--white);
+}
+.header.active .navbar-logo {
+  /* make logo appear black (silhouette) */
+  filter: brightness(0) !important;
 }
 
-.navbar-top .logo {
-  color: var(--st-patricks-blue);
+/* Also make navbar text blue when header is active */
+.header.active .navbar-link,
+.header.active .logo {
+  color: #2563eb;
+}
   font-size: 4.2rem;
   font-weight: var(--fw-700);
 }
@@ -883,6 +900,14 @@ resize: none;
   .service-list{
     justify-content: center;
   }
+}
+
+/* Mobile: place hamburger menu button on the right side of the header */
+@media (max-width: 700px) {
+  .logo-wrapper { order: -1; margin-left: -12px !important; transform: translateX(-4px); }
+  .nav-open-btn { order: 2; margin-left: auto; }
+  .lang-btn { order: 3; margin-left: 8px; }
+  .navbar { order: 1; }
 }
 /* ============================
    APPS & HERRAMIENTAS SECTION

@@ -98,14 +98,9 @@
         font-size: 14px;
       }
 
-      /* Ocultar menú de navegación en móvil */
-      .navbar,
-      .nav-open-btn,
-      .overlay,
-      .navbar-top,
-      .navbar-list {
-        display: none !important;
-      }
+      /* En móvil mostramos el botón de abrir menú y el panel cuando se active. */
+      /* No ocultamos estos elementos con display:none; el comportamiento se controla
+         mediante clases (`.navbar.active` y `.overlay.active`) y el botón `nav-open-btn`. */
       /* Ajuste opcional: mantener logo y botón idioma visibles */
       .header .container { display: flex; align-items: center; gap: 8px; }
       .logo { flex: 0 0 auto; }
@@ -139,8 +134,9 @@
 
       <div class="overlay" data-overlay></div>
 
-   <a href="Dashboard/access.html" class="logo-wrapper">
-  <img src="images/Logotipo-10.png" alt="Amelo's Studio" class="navbar-logo" />
+  <a href="Dashboard/access.html" class="logo-wrapper">
+  <img id="siteLogo" src="images/Logotipo-10.png" alt="Amelo's Studio" class="navbar-logo"
+     data-default-src="images/Logotipo-10.png" data-dark-src="images/Logotipo-18.png" />
 </a>
 
  <!-- Navegación -->
@@ -521,16 +517,16 @@
       <!-- PLANTILLA PARA OTRA APP -->
       <div class="app-card">
         <div class="app-image">
-          <img src="images/app-placeholder.jpg" alt="Nueva Herramienta">
+          <img src="images/facturalogo.png" alt="Nueva Herramienta">
         </div>
 
         <div class="app-info">
-          <h3 class="app-name" data-i18n="apps.app2.title">Nueva herramienta</h3>
+          <h3 class="app-name" data-i18n="apps.app2.title">Generador</h3>
           <p class="app-desc" data-i18n="apps.app2.desc">
-            Agrega aquí la descripción de la próxima aplicación o utilidad desarrollada por Amelo Studio.
+           Una sencilla web-app para generar tus facturas personalizadas en PDF.
           </p>
 
-          <a href="#" class="app-btn" data-i18n="apps.open">Abrir herramienta</a>
+          <a href="APPS/facturas.html" class="app-btn" data-i18n="apps.open">Abrir herramienta</a>
         </div>
       </div>
 
@@ -709,8 +705,8 @@
 "apps.subtitle": "Descubre herramientas digitales creadas por Amelo Studio para facilitar tu día a día.",
 "apps.qr.title": "Generador de Códigos QR",
 "apps.qr.desc": "Genera códigos QR rápidos, limpios y descargables. Perfecto para negocios y uso personal.",
-"apps.app2.title": "Nueva herramienta",
-"apps.app2.desc": "Agrega aquí la descripción de la próxima aplicación o utilidad desarrollada por Amelo Studio.",
+"apps.app2.title": "Generador de facturas",
+"apps.app2.desc": "Una sencilla web-app para generar tus facturas personalizadas en PDF.",
 "apps.open": "Abrir herramienta",
 "nav.tools":"Herramientas"
 
@@ -802,8 +798,8 @@
 "apps.subtitle": "Discover digital tools created by Amelo Studio to make your life easier.",
 "apps.qr.title": "QR Code Generator",
 "apps.qr.desc": "Create fast, clean and downloadable QR codes. Ideal for business and personal use.",
-"apps.app2.title": "New Tool",
-"apps.app2.desc": "Add the description of your next tool here.",
+"apps.app2.title": "Invoice Generator",
+"apps.app2.desc": "A simple web app to generate your personalized invoices in PDF.",
 "apps.open": "Open tool",
 "nav.tools":"Tools"
 

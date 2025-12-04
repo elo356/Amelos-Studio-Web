@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Facturas - Amelo Studio</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4b8bff;
+      --primary-dark: #3a75db;
+      --bg: #e9eeff;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      padding: 28px 28px 32px;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+      backdrop-filter: blur(10px);
+      animation: fadeIn .8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .logo {
+      width: 130px;
+      display: block;
+      opacity: .95;
+    }
+
+    .title-block {
+      flex: 1;
+      text-align: right;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Espacio para anuncios (no tapa nada) */
+    .ad-space {
+      width: 100%;
+      margin: 12px 0 18px;
+      text-align: center;
+    }
+
+    /* Layout principal */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 22px;
+      margin-top: 10px;
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 18px 18px 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .field input,
+    .field textarea {
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1.5px solid #d6daf0;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      font-family: inherit;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(75,139,255,0.25);
+    }
+
+    /* Tabla de items */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #eceff7;
+      text-align: left;
+    }
+
+    th {
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    td input {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #dfe3f2;
+      padding: 6px 7px;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    td input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 6px rgba(75,139,255,0.2);
+    }
+
+    td .line-total {
+      font-weight: 600;
+      text-align: right;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .delete-row-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #c0392b;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .add-item-btn {
+      margin-top: 10px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      background: #f1f3ff;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+    }
+
+    .add-item-btn:hover {
+      background: #e1e5ff;
+    }
+
+    /* Totales */
+    .totals {
+      margin-top: 16px;
+      border-top: 1px solid #eceff7;
+      padding-top: 12px;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .totals-row strong {
+      font-weight: 600;
+    }
+
+    .tax-input {
+      width: 80px;
+      padding: 5px 6px;
+      border-radius: 8px;
+      border: 1px solid #dfe3f2;
+      font-size: 13px;
+      outline: none;
+      text-align: right;
+    }
+
+    .tax-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 6px rgba(75,139,255,0.2);
+    }
+
+    .total-amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    /* Botones principales */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s, transform .1s, box-shadow .18s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(75,139,255,0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(75,139,255,0.35);
+    }
+
+    .btn-secondary {
+      background: #f1f3ff;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e4ff;
+    }
+
+    /* Vista previa de factura */
+    .invoice-preview {
+      margin-top: 22px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid #eceff7;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .invoice-header-left h2 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+
+    .invoice-header-left p {
+      margin: 0;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .invoice-header-right {
+      text-align: right;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .invoice-header-right div {
+      margin-bottom: 4px;
+    }
+
+    .invoice-to {
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .invoice-to strong {
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+
+    .invoice-totals {
+      margin-top: 10px;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .invoice-totals div {
+      margin-bottom: 4px;
+    }
+
+    .invoice-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Créditos */
+    .credits {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #6d6d6d;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .credits a {
+      color: var(--primary-dark);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .credits a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+      .title-block {
+        text-align: left;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 16px 22px;
+      }
+      .invoice-preview {
+        padding: 14px 12px;
+      }
+    }
+
+    /* Imprimir: solo la factura */
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        background: #ffffff;
+        padding: 0;
+        max-width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .invoice-preview {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ESPACIO PARA ANUNCIO SUPERIOR (NO TAPA CONTENIDO) -->
+    <div class="ad-space no-print">
+      <!-- Aquí puedes pegar tu script de Adsterra TOP si quieres -->
+      <!-- <script async src="..."></script> -->
+    </div>
+
+    <div class="top-bar no-print">
+      <img src="Logotipo-18.png" class="logo" alt="Amelo Studio">
+      <div class="title-block">
+        <h1>Generador de Facturas</h1>
+        <p class="subtitle">Crea facturas simples y descárgalas como PDF desde tu navegador.</p>
+      </div>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="tool-grid no-print">
+
+      <!-- PANEL IZQUIERDO: DATOS + ITEMS -->
+      <div class="panel">
+
+        <div class="panel-title">Datos de la factura</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="empresa">Nombre de tu negocio</label>
+            <input type="text" id="empresa" placeholder="Ej: Amelo Studio">
+          </div>
+          <div class="field">
+            <label for="numero">Número de factura</label>
+            <input type="text" id="numero" placeholder="Ej: 0001">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="cliente">Cliente</label>
+            <input type="text" id="cliente" placeholder="Nombre del cliente">
+          </div>
+          <div class="field">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="notas">Notas (opcional)</label>
+          <textarea id="notas" placeholder="Ej: Gracias por su confianza."></textarea>
+        </div>
+
+        <div class="panel-title" style="margin-top:16px;">Productos / Servicios</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th style="width:80px;">Cant.</th>
+              <th style="width:110px;">Precio</th>
+              <th style="width:110px; text-align:right;">Total</th>
+              <th style="width:28px;"></th>
+            </tr>
+          </thead>
+          <tbody id="items-body">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+
+        <button type="button" class="add-item-btn" id="add-item-btn">+ Agregar línea</button>
+
+      </div>
+
+      <!-- PANEL DERECHO: TOTALES + ACCIONES -->
+      <div class="panel">
+
+        <div class="panel-title">Resumen</div>
+
+        <div class="totals">
+          <div class="totals-row">
+            <span>Subtotal</span>
+            <strong id="subtotal-view">$0.00</strong>
+          </div>
+          <div class="totals-row">
+            <span>Impuesto (%)</span>
+            <div>
+              <input type="number" id="tax" class="tax-input" placeholder="Ej: 11.5" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="totals-row">
+            <span>Impuesto calculado</span>
+            <strong id="tax-amount-view">$0.00</strong>
+          </div>
+          <div class="totals-row">
+            <span>Total</span>
+            <span class="total-amount" id="total-view">$0.00</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="preview-btn">Generar vista previa</button>
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='https://amelostudio.me'">Volver al inicio</button>
+          <button type="button" class="btn btn-secondary" id="print-btn">Imprimir / Guardar PDF</button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- VISTA PREVIA FACTURA (se imprime) -->
+    <div class="invoice-preview" id="invoice-preview">
+      <div class="invoice-header">
+        <div class="invoice-header-left">
+          <h2 id="prev-empresa">Nombre del negocio</h2>
+          <p>Factura generada con Amelo Studio Tools</p>
+        </div>
+        <div class="invoice-header-right">
+          <div><strong>Factura #</strong> <span id="prev-numero">-</span></div>
+          <div><strong>Fecha:</strong> <span id="prev-fecha">-</span></div>
+        </div>
+      </div>
+
+      <div class="invoice-to">
+        <strong>Facturar a:</strong>
+        <div id="prev-cliente">Nombre del cliente</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th style="width:80px;">Cant.</th>
+            <th style="width:110px;">Precio</th>
+            <th style="width:110px; text-align:right;">Total</th>
+          </tr>
+        </thead>
+        <tbody id="preview-items">
+          <!-- Filas de vista previa -->
+        </tbody>
+      </table>
+
+      <div class="invoice-totals">
+        <div>Subtotal: <strong id="prev-subtotal">$0.00</strong></div>
+        <div>Impuesto: <strong id="prev-tax-amount">$0.00</strong></div>
+        <div>Total: <strong id="prev-total">$0.00</strong></div>
+      </div>
+
+      <div class="invoice-note" id="prev-notas">
+        <!-- Notas -->
+      </div>
+    </div>
+
+    <!-- ESPACIO PARA ANUNCIO INFERIOR -->
+    <div class="ad-space no-print">
+      <!-- Aquí puedes pegar tu script de Adsterra BOTTOM si quieres -->
+    </div>
+
+    <!-- CRÉDITOS -->
+    <div class="credits no-print">
+      Developed by <a href="https://amelostudio.com" target="_blank" rel="noopener">Amelo Studio</a>
+    </div>
+
+  </div>
+
+  <script>
+    const itemsBody = document.getElementById('items-body');
+    const addItemBtn = document.getElementById('add-item-btn');
+    const taxInput = document.getElementById('tax');
+
+    const subtotalView = document.getElementById('subtotal-view');
+    const taxAmountView = document.getElementById('tax-amount-view');
+    const totalView = document.getElementById('total-view');
+
+    const previewBtn = document.getElementById('preview-btn');
+    const printBtn = document.getElementById('print-btn');
+    const previewContainer = document.getElementById('invoice-preview');
+
+    function formatoMoneda(valor) {
+      return '$' + valor.toFixed(2);
+    }
+
+    function agregarFilaItem(descripcion = '', cantidad = 1, precio = 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <input type="text" class="item-desc" placeholder="Descripción" value="${descripcion}">
+        </td>
+        <td>
+          <input type="number" class="item-qty" min="0" step="1" value="${cantidad}">
+        </td>
+        <td>
+          <input type="number" class="item-price" min="0" step="0.01" value="${precio}">
+        </td>
+        <td class="line-total">$0.00</td>
+        <td>
+          <button type="button" class="delete-row-btn" title="Eliminar línea">&times;</button>
+        </td>
+      `;
+      itemsBody.appendChild(tr);
+      recalcularTotales();
+    }
+
+    function recalcularTotales() {
+      const rows = itemsBody.querySelectorAll('tr');
+      let subtotal = 0;
+
+      rows.forEach(row => {
+        const qtyInput = row.querySelector('.item-qty');
+        const priceInput = row.querySelector('.item-price');
+        const totalCell = row.querySelector('.line-total');
+
+        const qty = parseFloat(qtyInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const lineTotal = qty * price;
+
+        subtotal += lineTotal;
+        totalCell.textContent = formatoMoneda(lineTotal);
+      });
+
+      const taxRate = parseFloat(taxInput.value) || 0;
+      const taxAmount = subtotal * (taxRate / 100);
+      const total = subtotal + taxAmount;
+
+      subtotalView.textContent = formatoMoneda(subtotal);
+      taxAmountView.textContent = formatoMoneda(taxAmount);
+      totalView.textContent = formatoMoneda(total);
+    }
+
+    // Eventos de inputs de items (delegación)
+    itemsBody.addEventListener('input', (e) => {
+      if (e.target.classList.contains('item-qty') || e.target.classList.contains('item-price')) {
+        recalcularTotales();
+      }
+    });
+
+    // Eliminar filas
+    itemsBody.addEventListener('click', (e) => {
+      if (e.target.classList.contains('delete-row-btn')) {
+        e.target.closest('tr').remove();
+        recalcularTotales();
+      }
+    });
+
+    // Cambio en el impuesto
+    taxInput.addEventListener('input', recalcularTotales);
+
+    // Agregar nueva fila
+    addItemBtn.addEventListener('click', () => {
+      agregarFilaItem();
+    });
+
+    // Agregar al menos una fila por defecto
+    agregarFilaItem();
+
+    // Vista previa
+    previewBtn.addEventListener('click', () => {
+      const empresa = document.getElementById('empresa').value || 'Nombre del negocio';
+      const numero = document.getElementById('numero').value || '-';
+      const cliente = document.getElementById('cliente').value || 'Cliente';
+      const fecha = document.getElementById('fecha').value || '-';
+      const notas = document.getElementById('notas').value.trim();
+
+      document.getElementById('prev-empresa').textContent = empresa;
+      document.getElementById('prev-numero').textContent = numero;
+      document.getElementById('prev-cliente').textContent = cliente;
+      document.getElementById('prev-fecha').textContent = fecha || '-';
+
+      // Copiar items
+      const previewItemsBody = document.getElementById('preview-items');
+      previewItemsBody.innerHTML = '';
+
+      const rows = itemsBody.querySelectorAll('tr');
+      rows.forEach(row => {
+        const desc = row.querySelector('.item-desc').value || '';
+        const qty = row.querySelector('.item-qty').value || '0';
+        const price = row.querySelector('.item-price').value || '0';
+        const total = row.querySelector('.line-total').textContent || '$0.00';
+
+        if (!desc && parseFloat(qty) === 0 && parseFloat(price) === 0) return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${desc}</td>
+          <td>${qty}</td>
+          <td>${formatoMoneda(parseFloat(price) || 0)}</td>
+          <td style="text-align:right;">${total}</td>
+        `;
+        previewItemsBody.appendChild(tr);
+      });
+
+      // Totales en preview
+      document.getElementById('prev-subtotal').textContent = subtotalView.textContent;
+      document.getElementById('prev-tax-amount').textContent = taxAmountView.textContent;
+      document.getElementById('prev-total').textContent = totalView.textContent;
+
+      const notasEl = document.getElementById('prev-notas');
+      if (notas) {
+        notasEl.textContent = notas;
+      } else {
+        notasEl.textContent = '';
+      }
+
+      // Mostrar vista previa (ya está visible, pero por si quieres animar/focus)
+      previewContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Imprimir
+    printBtn.addEventListener('click', () => {
+      // Asegurarse de que la vista previa esté actualizada antes de imprimir
+      previewBtn.click();
+      setTimeout(() => {
+        window.print();
+      }, 300);
+    });
+  </script>
+
+</body>
+</html>
