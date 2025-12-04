@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Generador QR Profesional - Amelo Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary: #4b8bff;
+        --primary-dark: #3a75db;
+        --bg: #e9eeff;
+        --card-bg: rgba(255,255,255,0.8);
+        --radius: 22px;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: var(--bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 460px;
+        background: var(--card-bg);
+        padding: 35px 32px;
+        border-radius: var(--radius);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+        backdrop-filter: blur(10px);
+        animation: fadeIn .8s ease;
+        position: relative;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+        width: 130px;
+        margin: 0 auto 15px auto;
+        display: block;
+        opacity: .95;
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .input-box {
+        width: 100%;
+        padding: 15px;
+        border-radius: 14px;
+        border: 2px solid #d6daf0;
+        font-size: 16px;
+        outline: none;
+        transition: .25s ease;
+        background: rgba(255,255,255,0.75);
+    }
+
+    .input-box:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 10px rgba(75,139,255,0.3);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 14px;
+        color: white;
+        font-weight: 600;
+        font-size: 17px;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: .2s ease;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+    }
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-download {
+        background: #2acb64;
+    }
+    .btn-download:hover {
+        background: #26b359;
+    }
+
+    .btn-secondary {
+        background: #777;
+    }
+    .btn-secondary:hover {
+        background: #5e5e5e;
+    }
+
+    #qrcode {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+    }
+
+    #qrcode canvas {
+        max-width: 280px;
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 12px;
+        padding: 10px;
+        background: white;
+    }
+
+    /* Zonas de Ads */
+    .ad-box {
+        width: 100%;
+        height: 90px;
+        background: rgba(0,0,0,0.06);
+        border: 2px dashed #c4c8dd;
+        border-radius: 12px;
+        margin: 18px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        color: #7a7a7a;
+        font-weight: 500;
+    }
+
+    /* Créditos */
+    .credits {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 14px;
+        color: #6d6d6d;
+        opacity: 0.85;
+        font-weight: 500;
+    }
+
+    .credits a {
+        color: var(--primary-dark);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .credits a:hover {
+        text-decoration: underline;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ZONA AD SUPERIOR -->
+    <div class="ad-box">
+        ADSTERRA TOP BANNER
+    </div>
+
+    <img src="images/Logotipo-10.png" class="logo" alt="Amelo Studio">
+
+    <h1>Generador QR</h1>
+
+    <input id="texto" class="input-box" type="text" placeholder="Ingresa un enlace o texto...">
+
+    <button class="btn btn-primary" onclick="generarQR()">Generar QR</button>
+
+    <div id="qrcode"></div>
+
+    <button id="descargar" class="btn btn-download" style="display:none;" onclick="descargarQR()">Descargar QR</button>
+
+    <button class="btn btn-secondary" onclick="window.location.href='index.html'">Volver</button>
+
+    <!-- ZONA AD INFERIOR -->
+    <div class="ad-box">
+     <script
+  async="async"
+  data-cfasync="false"
+  src="//pl28191199.effectivegatecpm.com/f5aa8ee12a4ba0382c559789b1edbd29/invoke.js"
+></script>
+<div id="container-f5aa8ee12a4ba0382c559789b1edbd29"></div>
+    </div>
+
+    <!-- CRÉDITOS PROFESIONALES -->
+    <div class="credits">
+        Developed by <a href="https://amelostudio.com" target="_blank">Amelo Studio</a>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+let qrcode;
+
+function generarQR() {
+    const texto = document.getElementById("texto").value;
+
+    if (!texto.trim()) {
+        alert("Por favor escribe un texto o enlace.");
+        return;
+    }
+
+    document.getElementById("qrcode").innerHTML = "";
+
+    qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: texto,
+        width: 260,
+        height: 260,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+    });
+
+    document.getElementById("descargar").style.display = "block";
+}
+
+function descargarQR() {
+    const canvas = document.querySelector("#qrcode canvas");
+    const link = document.createElement("a");
+    link.download = "codigo_qr.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+}
+</script>
+
+</body>
+</html>

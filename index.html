@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="images/logoamelo.jpg" type="image/jpg">
+  <link rel="icon" href="images/Logotipo-19.jpg" type="image/jpg">
 
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
@@ -29,9 +29,10 @@
 <meta property="og:description" content="Amelo Studio desarrolla páginas web, aplicaciones web y móviles, ofreciendo soluciones digitales personalizadas para personas y empresas.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://amelostudio.me/">
-<meta property="og:image" content="https://amelostudio.me/images/logoamelo.jpg">
-
-<link rel="icon" href="https://amelostudio.me/images/logoamelo.jpg" type="image/jpg">
+<meta property="og:image" content="https://amelostudio.me/images/Logotipo-19.jpg">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6398033438022998"
+     crossorigin="anonymous"></script>
+<link rel="icon" href="https://amelostudio.me/images/Logotipo-19.jpg" type="image/jpg">
   <!-- Nuevo: estilos para el botón flotante -->
   <style>
     .whatsapp-float {
@@ -109,6 +110,20 @@
       .header .container { display: flex; align-items: center; gap: 8px; }
       .logo { flex: 0 0 auto; }
     }
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  height: 50px; /* Altura real del navbar */
+  overflow: visible; /* Permite que el logo salga del navbar */
+}
+
+.navbar-logo {
+  height: 50px;           /* Tamaño REAL dentro del navbar */
+  width: auto;
+  transform: scale(4);    /* Ajusta hasta que visualmente parezca ~400px */
+  transform-origin: left center; /* Crece hacia afuera sin mover el navbar */
+  display: block;
+}
 
   </style>
 
@@ -124,9 +139,10 @@
 
       <div class="overlay" data-overlay></div>
 
-      <a href="Dashboard/access.html">
-        <h1 class="logo" data-i18n="brand.name">Amelo's Studio</h1>
-      </a>
+   <a href="Dashboard/access.html" class="logo-wrapper">
+  <img src="images/Logotipo-10.png" alt="Amelo's Studio" class="navbar-logo" />
+</a>
+
  <!-- Navegación -->
       <nav class="navbar" data-navbar>
 
