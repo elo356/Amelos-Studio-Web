@@ -1000,3 +1000,84 @@ resize: none;
 .app-btn:hover {
   background: #3a4fcc;
 }
+
+
+.whatsapp-float {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 56px;
+      height: 56px;
+      background: #25D366;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(37,211,102,0.24);
+      z-index: 9999;
+      text-decoration: none;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .whatsapp-float:hover,
+    .whatsapp-float:focus {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(37,211,102,0.2);
+      outline: none;
+    }
+    .whatsapp-float ion-icon {
+      font-size: 24px;
+      color: #fff;
+    }
+    @media (max-width: 420px) {
+      .whatsapp-float { right: 14px; bottom: 14px; width: 48px; height: 48px; }
+      .whatsapp-float ion-icon { font-size: 20px; }
+    }
+
+    .lang-btn {
+      margin-left: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: transparent; 
+      color: #ffffff;           
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .12s ease, color .12s ease, box-shadow .12s ease;
+    }
+    .lang-btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,0.08); }
+   
+    .lang-btn.scrolled {
+      background: #ffffff;
+      color: #111;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+    @media (max-width: 700px) {
+
+      .lang-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+
+      .header .container { display: flex; align-items: center; gap: 8px; }
+      .logo { flex: 0 0 auto; }
+    }
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  height: 50px; 
+  overflow: visible; 
+}
+
+.navbar-logo {
+  height: 50px;           
+  width: auto;
+  transform: scale(4);   
+  transform-origin: left center; 
+  display: block;
+}
