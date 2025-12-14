@@ -324,15 +324,15 @@ body {
   transition: 0.5s var(--cubic-out);
 }
 
-.navbar-top {
-  display: flex;
-  justify-content: space-between;
+.navbar-logo {
+  height: 32px;
+  max-height: 32px;
+  width: auto;
+  transform: none;
+  display: block;
+  transition: filter 0.18s var(--cubic-out), transform 0.18s var(--cubic-out);
+  /* by default make the logo light so it contrasts over a dark header */
   filter: brightness(0) invert(1);
-  padding-block: 10px 30px;
-/* When the header is active (scrolled) show navbar with white background
-   and make the logo appear solid black */
-.header.active {
-  background-color: var(--white);
 }
 .header.active .navbar-logo {
   /* make logo appear black (silhouette) */
