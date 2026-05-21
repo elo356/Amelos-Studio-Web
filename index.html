@@ -29,7 +29,7 @@ nav > :not(.header-canvas){position:relative;z-index:1}
 .nav-logo{display:flex;align-items:center;height:52px;cursor:pointer}
 .nav-logo img{height:52px;width:auto;max-width:200px;object-fit:contain;display:block}
 .nav-logo-placeholder{height:44px;width:140px;border:1px dashed var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase}
-.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links{display:flex;gap:1.45rem;list-style:none}
 .nav-links a{color:var(--muted2);font-size:0.85rem;transition:color 0.2s;font-weight:500}
 .nav-links a:hover{color:var(--text)}
 .nav-right{display:flex;align-items:center;gap:1rem}
@@ -143,12 +143,14 @@ nav > :not(.header-canvas){position:relative;z-index:1}
 .qr-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(108,99,255,0.08)}
 
 /* WHY */
-.why-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:3rem}
-.why-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color 0.2s}
-.why-card:hover{border-color:rgba(108,99,255,0.35)}
-.why-icon{font-size:1.5rem;margin-bottom:1rem}
-.why-card h3{font-size:0.92rem;font-weight:700;margin-bottom:0.4rem}
-.why-card p{color:var(--muted);font-size:0.78rem;line-height:1.65;font-weight:400}
+.why-wrap{background:linear-gradient(180deg,var(--bg2),var(--bg3));border-top:1px solid var(--border)}
+.why-head{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:2rem}
+.why-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0.75rem}
+.why-card{background:rgba(17,17,32,0.78);border:1px solid var(--border);border-radius:10px;padding:1.1rem;min-height:180px;transition:all 0.2s}
+.why-card:hover{border-color:rgba(108,99,255,0.45);background:rgba(28,28,42,0.9);transform:translateY(-2px)}
+.why-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.22);border-radius:8px;font-size:1.05rem;margin-bottom:0.9rem}
+.why-card h3{font-size:0.82rem;font-weight:700;line-height:1.25;margin-bottom:0.35rem}
+.why-card p{color:var(--muted);font-size:0.68rem;line-height:1.5;font-weight:400}
 
 /* PROJECTS */
 .projects-wrap{background:var(--bg2);border-top:1px solid var(--border)}
@@ -190,6 +192,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   .ai-inner{grid-template-columns:1fr;gap:3rem}
   .nav-links{display:none}
   .hamburger{display:flex}
+  .why-head{display:block}
+  .why-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:600px){
   nav{padding:0.6rem 0.8rem}
@@ -212,6 +216,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   .scard h3{font-size:0.82rem;line-height:1.25;margin-bottom:0.35rem}
   .scard p{font-size:0.68rem;line-height:1.45;margin-bottom:0.75rem}
   .scard-cta{font-size:0.68rem;opacity:1}
+  .why-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .why-card{border:0;border-radius:0;min-height:160px;padding:1rem}
   .hero-stats{gap:1.5rem}
   .stat:not(:last-child)::after{display:none}
   footer{flex-direction:column;text-align:center}
@@ -228,6 +234,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   <ul class="nav-links">
     <li><a href="#servicios" data-i18n="navServices">Servicios</a></li>
     <li><a href="#ia" data-i18n="navAi">Inteligencia Artificial</a></li>
+    <li><a href="#porque" data-i18n="navWhy">Por qué nosotros</a></li>
     <li><a href="#proyectos" data-i18n="navProjects">Proyectos</a></li>
     <li><a href="#contacto" data-i18n="navContact">Contacto</a></li>
   </ul>
@@ -240,6 +247,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
 <div class="mobile-menu" id="mob-menu">
   <a href="#servicios" onclick="closeMenu()" data-i18n="navServices">Servicios</a>
   <a href="#ia" onclick="closeMenu()" data-i18n="navAi">Inteligencia Artificial</a>
+  <a href="#porque" onclick="closeMenu()" data-i18n="navWhy">Por qué nosotros</a>
   <a href="#proyectos" onclick="closeMenu()" data-i18n="navProjects">Proyectos</a>
   <a href="#contacto" onclick="closeMenu()" data-i18n="navContact">Contacto</a>
 </div>
@@ -327,17 +335,22 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   </div>
 </div>
 
-<div style="background:var(--bg2);border-top:1px solid var(--border)">
+<div class="why-wrap" id="porque">
   <div class="section">
-    <p class="section-tag">¿Por qué Amelo Studio?</p>
-    <h2 class="section-title">Pequeños en tamaño, grandes en resultados</h2>
+    <div class="why-head">
+      <div>
+        <p class="section-tag" data-i18n="whyTag">¿Por qué Amelo Studio?</p>
+        <h2 class="section-title" data-i18n="whyTitle">Pequeños en tamaño, grandes en resultados</h2>
+      </div>
+      <p class="section-sub" data-i18n="whySub">Un estudio cercano, rápido y enfocado en soluciones que se sienten hechas para tu negocio.</p>
+    </div>
     <div class="why-grid">
-      <div class="why-card"><div class="why-icon">⚡</div><h3>Entrega rápida</h3><p>Proyectos ágiles con tiempos de entrega eficientes sin sacrificar calidad.</p></div>
-      <div class="why-card"><div class="why-icon">💰</div><h3>Precios accesibles</h3><p>Ajustamos el precio a tu presupuesto. Sin costos ocultos ni sorpresas.</p></div>
-      <div class="why-card"><div class="why-icon">🎯</div><h3>Enfoque personalizado</h3><p>Cada solución es hecha a la medida. No usamos plantillas genéricas.</p></div>
-      <div class="why-card"><div class="why-icon">🤝</div><h3>Comunicación directa</h3><p>Hablas directo con el equipo. Sin intermediarios ni respuestas automáticas.</p></div>
-      <div class="why-card"><div class="why-icon">🇵🇷</div><h3>Equipo local PR</h3><p>Somos de Puerto Rico. Entendemos el mercado local y hablamos tu idioma.</p></div>
-      <div class="why-card"><div class="why-icon">🔄</div><h3>Soporte continuo</h3><p>No desaparecemos después de entregar. Ofrecemos mantenimiento y soporte.</p></div>
+      <div class="why-card"><div class="why-icon">⚡</div><h3 data-i18n="whyFastTitle">Entrega rápida</h3><p data-i18n="whyFastText">Procesos ágiles sin sacrificar calidad.</p></div>
+      <div class="why-card"><div class="why-icon">💰</div><h3 data-i18n="whyPriceTitle">Precios accesibles</h3><p data-i18n="whyPriceText">Planes claros, sin costos ocultos.</p></div>
+      <div class="why-card"><div class="why-icon">🎯</div><h3 data-i18n="whyCustomTitle">A la medida</h3><p data-i18n="whyCustomText">Soluciones pensadas para tu negocio.</p></div>
+      <div class="why-card"><div class="why-icon">🤝</div><h3 data-i18n="whyCommTitle">Comunicación directa</h3><p data-i18n="whyCommText">Hablas con el equipo, sin vueltas.</p></div>
+      <div class="why-card"><div class="why-icon">🇵🇷</div><h3 data-i18n="whyLocalTitle">Equipo local PR</h3><p data-i18n="whyLocalText">Entendemos tu mercado y tu idioma.</p></div>
+      <div class="why-card"><div class="why-icon">🔄</div><h3 data-i18n="whySupportTitle">Soporte continuo</h3><p data-i18n="whySupportText">Seguimos contigo después de entregar.</p></div>
     </div>
   </div>
 </div>
@@ -424,26 +437,34 @@ initParticles('header-canvas',32,95);
 
 // COUNTERS
 function animCount(el,target,suffix){let n=0;const step=Math.ceil(target/50);const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=n+suffix;if(n>=target)clearInterval(t);},35);}
-setTimeout(()=>{animCount(document.getElementById('cnt-c'),7,'+');animCount(document.getElementById('cnt-p'),31,'+');animCount(document.getElementById('cnt-s'),22,'');},600);
+setTimeout(()=>{animCount(document.getElementById('cnt-c'),7,'+');animCount(document.getElementById('cnt-p'),31,'+');animCount(document.getElementById('cnt-s'),services.length,'');},600);
 
 // LANGUAGE
 let currentLang='es';
 const translations={
   es:{
-    navServices:'Servicios',navAi:'Inteligencia Artificial',navProjects:'Proyectos',navContact:'Contacto',navCta:'Hablemos →',
+    navServices:'Servicios',navAi:'Inteligencia Artificial',navWhy:'Por qué nosotros',navProjects:'Proyectos',navContact:'Contacto',navCta:'Hablemos →',
     heroTag:'Amelo Studio · Desarrollo web, apps e IA en Puerto Rico',heroTitle:'Soluciones digitales',heroTitle2:'sin límites',heroSub:'Webs, apps, sistemas para comercios y agentes de IA — todo hecho a la medida de tu negocio.',heroPrimary:'Comenzar proyecto',heroSecondary:'Ver proyectos',
     clients:'Clientes',projects:'Proyectos',services:'Servicios',
     servicesTag:'Servicios',servicesTitle:'Todo lo que necesitas en un solo estudio',servicesSub:'Desde tu primera página web hasta sistemas inteligentes con IA.',
     aiTag:'Inteligencia Artificial',aiTitle:'Tu negocio, trabajando 24/7',aiSub:'Los agentes de IA de Amelo Studio atienden clientes, responden dudas y generan ventas — sin que tú tengas que estar presente.',aiCta:'Quiero un agente de IA →',
+    whyTag:'¿Por qué Amelo Studio?',whyTitle:'Pequeños en tamaño, grandes en resultados',whySub:'Un estudio cercano, rápido y enfocado en soluciones que se sienten hechas para tu negocio.',
+    whyFastTitle:'Entrega rápida',whyFastText:'Procesos ágiles sin sacrificar calidad.',whyPriceTitle:'Precios accesibles',whyPriceText:'Planes claros, sin costos ocultos.',
+    whyCustomTitle:'A la medida',whyCustomText:'Soluciones pensadas para tu negocio.',whyCommTitle:'Comunicación directa',whyCommText:'Hablas con el equipo, sin vueltas.',
+    whyLocalTitle:'Equipo local PR',whyLocalText:'Entendemos tu mercado y tu idioma.',whySupportTitle:'Soporte continuo',whySupportText:'Seguimos contigo después de entregar.',
     projectsTag:'Proyectos',projectsTitle:'Nuestro trabajo habla por sí solo',projectsSub:'Clientes reales, resultados reales en Puerto Rico.',
     contactTag:'Contacto',contactTitle:'¿Listo para construir algo?',contactSub:'Cuéntanos tu idea. Respondemos rápido y sin compromisos. El primer paso es gratis.',contactCta:'Escríbenos por WhatsApp →'
   },
   en:{
-    navServices:'Services',navAi:'Artificial Intelligence',navProjects:'Projects',navContact:'Contact',navCta:'Let’s talk →',
+    navServices:'Services',navAi:'Artificial Intelligence',navWhy:'Why us',navProjects:'Projects',navContact:'Contact',navCta:'Let’s talk →',
     heroTag:'Amelo Studio · Web development, apps and AI in Puerto Rico',heroTitle:'Digital solutions',heroTitle2:'without limits',heroSub:'Websites, apps, business systems and AI agents — all custom-built around your business.',heroPrimary:'Start a project',heroSecondary:'View projects',
     clients:'Clients',projects:'Projects',services:'Services',
     servicesTag:'Services',servicesTitle:'Everything you need in one studio',servicesSub:'From your first website to intelligent systems powered by AI.',
     aiTag:'Artificial Intelligence',aiTitle:'Your business, working 24/7',aiSub:'Amelo Studio AI agents support customers, answer questions and generate sales — even when you are away.',aiCta:'I want an AI agent →',
+    whyTag:'Why Amelo Studio?',whyTitle:'Small team, serious results',whySub:'A close, fast studio focused on solutions that feel built around your business.',
+    whyFastTitle:'Fast delivery',whyFastText:'Agile process without cutting quality.',whyPriceTitle:'Accessible pricing',whyPriceText:'Clear plans, no hidden costs.',
+    whyCustomTitle:'Custom fit',whyCustomText:'Solutions designed for your business.',whyCommTitle:'Direct communication',whyCommText:'You talk with the team, no runaround.',
+    whyLocalTitle:'Local PR team',whyLocalText:'We understand your market and language.',whySupportTitle:'Ongoing support',whySupportText:'We stay with you after delivery.',
     projectsTag:'Projects',projectsTitle:'Our work speaks for itself',projectsSub:'Real clients, real results in Puerto Rico.',
     contactTag:'Contact',contactTitle:'Ready to build something?',contactSub:'Tell us your idea. We reply fast, with no commitment. The first step is free.',contactCta:'Message us on WhatsApp →'
   }
@@ -461,7 +482,7 @@ function applyLanguage(lang){
 function toggleLanguage(){currentLang=currentLang==='es'?'en':'es';applyLanguage(currentLang);}
 
 // MARQUEE
-const items=['Desarrollo Web','Apps Móviles','Agentes de IA','Sistema POS','Tiendas Online','Facturación Digital','Hosting Administrado','Branding & Logo','SEO Avanzado','Chatbot con IA','Sistema de Citas','Bases de Datos','QR Personalizados','E-commerce'];
+const items=['Desarrollo Web','Apps Móviles','Agentes de IA','Sistema POS','Tiendas Online','Facturación Digital','Hosting Administrado','SEO Avanzado','Chatbot con IA','Sistema de Citas','Bases de Datos','QR Personalizados','E-commerce'];
 const mq=document.getElementById('mq');
 [...items,...items].forEach(i=>{const s=document.createElement('div');s.className='marquee-item';s.innerHTML=`<span class="dot"></span>${i}`;mq.appendChild(s);});
 
@@ -471,7 +492,6 @@ const services=[
   {cat:'web',icon:'🏗️',name:'Sitio Multi-página',desc:'Hasta 8 secciones, menú completo y SEO avanzado.',status:''},
   {cat:'web',icon:'🛒',name:'Tienda Online',desc:'Carrito, pagos online e inventario. WooCommerce o Shopify.',status:'hot'},
   {cat:'web',icon:'💳',name:'Tarjeta Digital',desc:'Enlace único, QR y diseño profesional.',status:''},
-  {cat:'web',icon:'🎨',name:'Branding & Logo',desc:'Identidad visual: logo, paleta de colores y tipografía.',status:'new'},
   {cat:'app',icon:'⚙️',name:'Aplicación Web',desc:'Herramientas y sistemas personalizados para tu negocio.',status:''},
   {cat:'app',icon:'📱',name:'App Android',desc:'Aplicación nativa para Android con publicación en Play Store.',status:''},
   {cat:'ia',icon:'🤖',name:'Agente IA para Llamadas',desc:'Voz natural que atiende llamadas 24/7 con OpenAI.',status:'hot'},
@@ -543,7 +563,6 @@ const responses=[
   {keys:['factura','facturación','facturacion','invoice'],reply:'Nuestro sistema de facturación 🧾 genera facturas digitales, gestiona clientes y produce reportes automáticos. ¡Dile adiós al papeleo!'},
   {keys:['hosting','dominio','servidor','mantenimiento'],reply:'Ofrecemos hosting administrado 🖥️ con dominio, servidor, SSL y mantenimiento continuo. Tú te enfocas en tu negocio, nosotros cuidamos tu web.'},
   {keys:['seo','google','posicionamiento','búsqueda','busqueda'],reply:'Con nuestro servicio de SEO 🔍 posicionamos tu web en Google con auditoría técnica, estrategia de keywords y optimización continua. ¡Más clientes te van a encontrar!'},
-  {keys:['logo','branding','marca','identidad','diseño','diseno'],reply:'Creamos tu identidad visual completa 🎨 — logo, paleta de colores y tipografía. ¡La base de cualquier negocio profesional!'},
   {keys:['qr','código qr','codigo qr'],reply:'Hacemos códigos QR personalizados 🔷 con tu logo y colores de marca. Perfectos para menús, tarjetas y eventos.'},
   {keys:['email','correo','newsletter','campaña','campana'],reply:'Gestionamos tus campañas de email marketing 📧 con Mailchimp o Brevo — newsletters, automatizaciones y secuencias que convierten.'},
   {keys:['puerto rico','pr','borinquen','isla'],reply:'¡Somos un estudio 100% de Puerto Rico! 🇵🇷 Entendemos el mercado local y trabajamos con negocios en toda la isla y más allá.'},
