@@ -174,19 +174,75 @@ nav > :not(.header-canvas){position:relative;z-index:1}
 .why-card p{color:var(--muted);font-size:0.68rem;line-height:1.5;font-weight:400}
 
 /* PROJECTS */
-.projects-wrap{background:var(--bg2);border-top:1px solid var(--border)}
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:3rem}
-.proj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.25s;cursor:pointer}
-.proj-card:hover{transform:translateY(-4px);border-color:rgba(108,99,255,0.4)}
-.proj-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--bg3);border-bottom:1px solid var(--border);overflow:hidden}
-.proj-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.35s}
-.proj-card:hover .proj-img img{transform:scale(1.05)}
-.proj-body{padding:1.25rem}
-.proj-body h3{font-size:0.95rem;font-weight:700;margin-bottom:0.35rem}
-.proj-body p{color:var(--muted);font-size:0.78rem;line-height:1.65;margin-bottom:0.85rem;font-weight:400}
-.proj-link{display:inline-flex;align-items:center;gap:0.35rem;color:var(--accent);font-size:0.78rem;font-weight:600;transition:gap 0.2s}
-.proj-link:hover{gap:0.6rem}
-.proj-tag{display:inline-block;font-size:0.65rem;padding:0.15rem 0.55rem;border-radius:100px;background:rgba(0,212,170,0.1);color:var(--accent3);margin-bottom:0.5rem;font-weight:600}
+.projects-wrap{position:relative;overflow:hidden;background:linear-gradient(180deg,#120f1f 0%,#0c0d15 100%);border-top:1px solid var(--border)}
+.proj-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.28;pointer-events:none;z-index:0}
+.proj-blob-1{width:420px;height:420px;background:var(--accent);top:-140px;left:-110px;animation:blobFloat1 17s ease-in-out infinite}
+.proj-blob-2{width:380px;height:380px;background:var(--accent2);bottom:-150px;right:-90px;animation:blobFloat2 19s ease-in-out infinite}
+@keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,35px) scale(1.15)}}
+@keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-40px,-45px) scale(1.1)}}
+.projects-wrap .section{position:relative;z-index:1}
+.projects-grid{display:grid;grid-template-columns:1.25fr 0.9fr 0.9fr;gap:1rem;margin-top:2.5rem;align-items:stretch}
+.proj-card{--mx:50%;--my:50%;position:relative;background:linear-gradient(180deg,#171725 0%,#0d0d18 100%);border:1px solid rgba(255,255,255,0.08);border-radius:28px;overflow:hidden;cursor:pointer;box-shadow:0 20px 50px rgba(0,0,0,0.2);isolation:isolate;
+  opacity:0;transform:translateY(42px);transition:opacity 0.6s ease,transform 0.6s cubic-bezier(.22,1,.36,1),box-shadow 0.32s ease,border-color 0.32s ease;transition-delay:calc(var(--stagger,0) * 90ms)}
+.proj-card.in-view{opacity:1;transform:translateY(0)}
+.proj-card:hover{border-color:rgba(255,255,255,0.18);box-shadow:0 30px 80px rgba(255,112,96,0.15)}
+.proj-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,127,80,0.12),rgba(255,104,163,0.08),rgba(80,223,255,0.1),transparent 66%);opacity:0;transition:opacity 0.3s ease;pointer-events:none;z-index:2}
+.proj-card:hover::before{opacity:1}
+.proj-card::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(300px circle at var(--mx) var(--my),rgba(255,255,255,0.12),transparent 60%);opacity:0;transition:opacity 0.3s ease}
+.proj-card:hover::after{opacity:1}
+.proj-card.featured{grid-column:span 2;min-height:440px}
+.proj-card.compact{min-height:360px}
+.proj-card:nth-child(1){--card-accent:#ff7b6f;--card-accent-soft:rgba(255,123,111,0.12)}
+.proj-card:nth-child(2){--card-accent:#7cf4d0;--card-accent-soft:rgba(124,244,208,0.12)}
+.proj-card:nth-child(3){--card-accent:#f7c95c;--card-accent-soft:rgba(247,201,92,0.12)}
+.proj-card:nth-child(4){--card-accent:#8aa8ff;--card-accent-soft:rgba(138,168,255,0.12)}
+.proj-card:nth-child(5){--card-accent:#ff9f5a;--card-accent-soft:rgba(255,159,90,0.12)}
+.proj-card:nth-child(6){--card-accent:#e0b355;--card-accent-soft:rgba(224,179,85,0.12)}
+.proj-card:nth-child(7){--card-accent:#c69bff;--card-accent-soft:rgba(198,155,255,0.12)}
+.proj-tilt{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;transition:transform 0.18s ease-out;transform-style:preserve-3d;will-change:transform}
+.proj-card:hover .proj-tilt{transform:translateY(-8px)}
+.proj-visual{position:relative;padding:1rem;height:180px;display:flex;align-items:flex-end;justify-content:space-between;background:radial-gradient(circle at 20% 10%,var(--card-accent-soft),transparent 35%),radial-gradient(circle at 80% 90%,rgba(255,255,255,0.08),transparent 28%);border-bottom:1px solid rgba(255,255,255,0.06)}
+.proj-card.featured .proj-visual{height:230px}
+.proj-mark{position:absolute;top:1rem;left:1rem;z-index:2;display:inline-flex;align-items:center;gap:0.4rem;padding:0.42rem 0.7rem;border:1px solid rgba(255,255,255,0.12);background:rgba(10,10,20,0.3);backdrop-filter:blur(10px);border-radius:999px;font-size:0.6rem;text-transform:uppercase;letter-spacing:1.3px;color:var(--text);font-weight:700}
+.proj-mark .live-dot{width:5px;height:5px;border-radius:50%;background:var(--accent3);animation:pulse 2s infinite}
+.proj-num{position:absolute;top:1rem;right:1rem;z-index:2;font-size:0.7rem;font-weight:800;letter-spacing:0.16rem;color:rgba(255,255,255,0.52)}
+.proj-img{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:22px;overflow:hidden;transform:rotate(-1.4deg)}
+.proj-card:nth-child(even) .proj-img{transform:rotate(1.2deg)}
+.proj-card:hover .proj-img{transform:rotate(0deg)}
+.proj-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.35s ease;filter:saturate(1.08) contrast(1.04)}
+.proj-card:hover .proj-img img{transform:scale(1.06)}
+.proj-body{position:relative;z-index:1;padding:1.2rem 1.25rem 1.35rem;display:flex;flex-direction:column;gap:0.7rem;flex:1}
+.proj-topline{display:flex;justify-content:space-between;align-items:center;gap:0.75rem}
+.proj-tag{display:inline-block;font-size:0.62rem;padding:0.22rem 0.6rem;border-radius:999px;background:var(--card-accent-soft);color:var(--card-accent);font-weight:700;letter-spacing:0.04em}
+.proj-meta{font-size:0.58rem;letter-spacing:0.14rem;text-transform:uppercase;color:var(--muted);font-weight:700}
+.proj-body h3{font-size:1.08rem;font-weight:800;letter-spacing:-0.04em;color:#f6f7ff}
+.proj-body p{color:#b7b2cf;font-size:0.8rem;line-height:1.72;font-weight:400}
+.proj-footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:0.5rem;border-top:1px solid rgba(255,255,255,0.08)}
+.proj-link{display:inline-flex;align-items:center;gap:0.35rem;color:#fff;font-size:0.72rem;font-weight:700;letter-spacing:0.02em}
+.proj-arrow{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);font-size:0.9rem;color:var(--card-accent);transition:transform 0.25s ease}
+.proj-card:hover .proj-arrow{transform:translateX(4px)}
+
+/* PROJECTS - CTA card */
+.proj-card.cta-card{background:transparent;border:1.5px dashed rgba(255,255,255,0.18);box-shadow:none}
+.proj-card.cta-card:hover{border-color:var(--accent);box-shadow:none}
+.proj-card.cta-card:hover::before,.proj-card.cta-card:hover::after{opacity:0}
+.cta-card-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem;height:100%;padding:2rem;text-align:center}
+.cta-card-icon{width:52px;height:52px;border-radius:50%;background:rgba(108,99,255,0.14);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--accent);animation:ctaPulse 2.4s ease-in-out infinite}
+@keyframes ctaPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+.cta-card-inner h3{font-size:1rem;font-weight:800;color:#f6f7ff}
+.cta-card-inner p{color:var(--muted2);font-size:0.8rem;max-width:220px}
+.cta-card-inner .proj-link{color:var(--accent)}
+
+/* PROJECTS - mobile dots */
+.proj-dots{display:none;justify-content:center;gap:0.5rem;margin-top:1.4rem}
+.proj-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:all 0.25s ease}
+.proj-dot.active{background:var(--accent);width:20px;border-radius:4px}
+
+@media(prefers-reduced-motion:reduce){
+  .proj-blob{animation:none}
+  .proj-card{transition:opacity 0.3s ease}
+  .proj-tilt{transition:none}
+}
 
 /* CTA */
 .cta-wrap{background:var(--bg);border-top:1px solid var(--border);position:relative;overflow:hidden}
@@ -215,6 +271,11 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   .hamburger{display:flex}
   .why-head{display:block}
   .why-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .projects-grid{display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;margin-top:2rem;padding:0.5rem 1.2rem 1rem;margin-inline:-1.2rem;cursor:grab;scrollbar-width:none}
+  .projects-grid::-webkit-scrollbar{display:none}
+  .projects-grid.dragging{cursor:grabbing;scroll-snap-type:none}
+  .proj-card,.proj-card.featured,.proj-card.compact{grid-column:unset;flex:0 0 82%;scroll-snap-align:center;min-height:400px}
+  .proj-dots{display:flex}
 }
 @media(max-width:600px){
   nav{padding:0.6rem 0.8rem}
@@ -230,6 +291,9 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   .section-inner{padding:0 1rem}
   .filter-tabs{gap:0.4rem;margin:2rem 0 1.5rem}
   .ftab{padding:0.42rem 0.8rem;font-size:0.72rem}
+  .proj-card,.proj-card.featured,.proj-card.compact{flex-basis:88%;min-height:360px}
+  .proj-visual{height:150px}
+  .proj-card.featured .proj-visual{height:170px}
   .services-grid{grid-template-columns:repeat(2,minmax(0,1fr));border-radius:12px}
   .scard{padding:1rem;min-height:178px}
   .scard-badge{top:0.7rem;right:0.7rem;font-size:0.55rem;padding:0.15rem 0.45rem}
@@ -284,7 +348,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   <p class="hero-sub" data-i18n="heroSub">Webs, apps, sistemas para comercios y agentes de IA - todo hecho a la medida de tu negocio.</p>
   <div class="hero-btns">
     <button class="btn-primary" data-i18n="heroPrimary" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Comenzar proyecto</button>
-    <button class="btn-ghost" data-i18n="heroSecondary" onclick="document.getElementById('proyectos').scrollIntoView({behavior:'smooth'})">Ver proyectos</button>
+    <button class="btn-ghost" data-i18n="heroSecondary" onclick="document.getElementById('proyectos').scrollIntoView({behavior:'smooth'})">Ver portafolio</button>
   </div>
   <div class="hero-stats">
     <div class="stat"><div class="stat-num" id="cnt-c">0+</div><div class="stat-label" data-i18n="clients">Clientes</div></div>
@@ -381,28 +445,15 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
 </div>
 
 <div class="projects-wrap" id="proyectos">
+  <div class="proj-blob proj-blob-1"></div>
+  <div class="proj-blob proj-blob-2"></div>
   <div class="section">
-    <p class="section-tag" data-i18n="projectsTag">Proyectos</p>
-    <h2 class="section-title" data-i18n="projectsTitle">Nuestro trabajo habla por sí solo</h2>
-    <p class="section-sub" data-i18n="projectsSub">Clientes reales, resultados reales en Puerto Rico.</p>
-    <div class="projects-grid">
-      <div class="proj-card" onclick="window.open('https://cjmarine.org/','_blank')">
-        <div class="proj-img"><img src="images/logoCj.jpeg" alt="CJ Marine"/></div>
-        <div class="proj-body"><span class="proj-tag">Web Corporativa</span><h3>CJ Marine</h3><p>Sitio para empresa de servicios marítimos. Diseño profesional orientado a confianza.</p><span class="proj-link">cjmarine.org →</span></div>
-      </div>
-      <div class="proj-card" onclick="window.open('https://laspalmitaspr.to/','_blank')">
-        <div class="proj-img"><img src="images/logoPalm.jpg" alt="Las Palmitas Airbnb"/></div>
-        <div class="proj-body"><span class="proj-tag">Airbnb / Reservas</span><h3>Las Palmitas Airbnb</h3><p>Landing de reservas para propiedad vacacional. Orientada a convertir visitantes.</p><span class="proj-link">laspalmitaspr.to →</span></div>
-      </div>
-      <div class="proj-card" onclick="window.open('https://dradalbertoechevarria.com/','_blank')">
-        <div class="proj-img"><img src="images/logoAEF.jpg" alt="AEF Primary Care"/></div>
-        <div class="proj-body"><span class="proj-tag">Clínica / Salud</span><h3>AEF Primary Care</h3><p>Web para clínica de atención primaria. Diseño limpio y orientado al paciente.</p><span class="proj-link">dradalbertoechevarria.com →</span></div>
-      </div>
-      <div class="proj-card" onclick="window.open('https://managas.org/','_blank')">
-        <div class="proj-img"><img src="images/logoMana.jpg" alt="Mana Gas"/></div>
-        <div class="proj-body"><span class="proj-tag">Comercio / Servicios</span><h3>Mana Gas</h3><p>Sitio para proveedor de gas propano en Puerto Rico. Información clara y directa.</p><span class="proj-link">managas.org →</span></div>
-      </div>
-    </div>
+    <p class="section-tag" data-i18n="projectsTag">Portafolio</p>
+    <h2 class="section-title" data-i18n="projectsTitle">Casos que hacen ruido y dejan marca</h2>
+    <p class="section-sub" data-i18n="projectsSub">Experiencias digitales con personalidad, energía y una idea clara: hacer que las marcas se recuerden.</p>
+    <div class="filter-tabs" id="proj-filter-tabs"></div>
+    <div class="projects-grid" id="projects-grid"></div>
+    <div class="proj-dots" id="proj-dots"></div>
   </div>
 </div>
 
@@ -468,29 +519,29 @@ setTimeout(()=>{animCount(document.getElementById('cnt-c'),7,'+');animCount(docu
 let currentLang='es';
 const translations={
   es:{
-    navServices:'Servicios',navAi:'Inteligencia Artificial',navWhy:'Por qué nosotros',navProjects:'Proyectos',navContact:'Contacto',navCta:'Hablemos →',
-    heroTag:'Amelo Studio · Desarrollo web, apps e IA en Puerto Rico',heroTitle:'Soluciones digitales',heroTitle2:'sin límites',heroSub:'Webs, apps, sistemas para comercios y agentes de IA - todo hecho a la medida de tu negocio.',heroPrimary:'Comenzar proyecto',heroSecondary:'Ver proyectos',
-    clients:'Clientes',projects:'Proyectos',services:'Servicios',
+    navServices:'Servicios',navAi:'Inteligencia Artificial',navWhy:'Por qué nosotros',navProjects:'Portafolio',navContact:'Contacto',navCta:'Hablemos →',
+    heroTag:'Amelo Studio · Desarrollo web, apps e IA en Puerto Rico',heroTitle:'Soluciones digitales',heroTitle2:'sin límites',heroSub:'Webs, apps, sistemas para comercios y agentes de IA - todo hecho a la medida de tu negocio.',heroPrimary:'Comenzar proyecto',heroSecondary:'Ver portafolio',
+    clients:'Clientes',projects:'Portafolio',services:'Servicios',
     servicesTag:'Servicios',servicesTitle:'Todo lo que necesitas en un solo estudio',servicesSub:'Desde tu primera página web hasta sistemas inteligentes con IA.',
     aiTag:'Inteligencia Artificial',aiTitle:'Tu negocio, trabajando 24/7',aiSub:'Los agentes de IA de Amelo Studio atienden clientes, responden dudas y generan ventas - sin que tú tengas que estar presente.',aiCta:'Quiero un agente de IA →',
     whyTag:'¿Por qué Amelo Studio?',whyTitle:'Pequeños en tamaño, grandes en resultados',whySub:'Un estudio cercano, rápido y enfocado en soluciones que se sienten hechas para tu negocio.',
     whyFastTitle:'Entrega rápida',whyFastText:'Procesos ágiles sin sacrificar calidad.',whyPriceTitle:'Precios accesibles',whyPriceText:'Planes claros, sin costos ocultos.',
     whyCustomTitle:'A la medida',whyCustomText:'Soluciones pensadas para tu negocio.',whyCommTitle:'Comunicación directa',whyCommText:'Hablas con el equipo, sin vueltas.',
     whyLocalTitle:'Equipo local PR',whyLocalText:'Entendemos tu mercado y tu idioma.',whySupportTitle:'Soporte continuo',whySupportText:'Seguimos contigo después de entregar.',
-    projectsTag:'Proyectos',projectsTitle:'Nuestro trabajo habla por sí solo',projectsSub:'Clientes reales, resultados reales en Puerto Rico.',
+    projectsTag:'Portafolio',projectsTitle:'Casos destacados y experiencias creadas para crecer',projectsSub:'Soluciones digitales con identidad, claridad y resultados para marcas en Puerto Rico.',
     contactTag:'Contacto',contactTitle:'¿Listo para construir algo?',contactSub:'Cuéntanos tu idea. Respondemos rápido y sin compromisos. El primer paso es gratis.',contactCta:'Escríbenos por WhatsApp →'
   },
   en:{
-    navServices:'Services',navAi:'Artificial Intelligence',navWhy:'Why us',navProjects:'Projects',navContact:'Contact',navCta:'Let’s talk →',
-    heroTag:'Amelo Studio · Web development, apps and AI in Puerto Rico',heroTitle:'Digital solutions',heroTitle2:'without limits',heroSub:'Websites, apps, business systems and AI agents - all custom-built around your business.',heroPrimary:'Start a project',heroSecondary:'View projects',
-    clients:'Clients',projects:'Projects',services:'Services',
+    navServices:'Services',navAi:'Artificial Intelligence',navWhy:'Why us',navProjects:'Portfolio',navContact:'Contact',navCta:'Let’s talk →',
+    heroTag:'Amelo Studio · Web development, apps and AI in Puerto Rico',heroTitle:'Digital solutions',heroTitle2:'without limits',heroSub:'Websites, apps, business systems and AI agents - all custom-built around your business.',heroPrimary:'Start a project',heroSecondary:'View portfolio',
+    clients:'Clients',projects:'Portfolio',services:'Services',
     servicesTag:'Services',servicesTitle:'Everything you need in one studio',servicesSub:'From your first website to intelligent systems powered by AI.',
     aiTag:'Artificial Intelligence',aiTitle:'Your business, working 24/7',aiSub:'Amelo Studio AI agents support customers, answer questions and generate sales - even when you are away.',aiCta:'I want an AI agent →',
     whyTag:'Why Amelo Studio?',whyTitle:'Small team, serious results',whySub:'A close, fast studio focused on solutions that feel built around your business.',
     whyFastTitle:'Fast delivery',whyFastText:'Agile process without cutting quality.',whyPriceTitle:'Accessible pricing',whyPriceText:'Clear plans, no hidden costs.',
     whyCustomTitle:'Custom fit',whyCustomText:'Solutions designed for your business.',whyCommTitle:'Direct communication',whyCommText:'You talk with the team, no runaround.',
     whyLocalTitle:'Local PR team',whyLocalText:'We understand your market and language.',whySupportTitle:'Ongoing support',whySupportText:'We stay with you after delivery.',
-    projectsTag:'Projects',projectsTitle:'Our work speaks for itself',projectsSub:'Real clients, real results in Puerto Rico.',
+    projectsTag:'Portfolio',projectsTitle:'Featured work and experiences designed to grow',projectsSub:'Digital solutions with identity, clarity and results for brands in Puerto Rico.',
     contactTag:'Contact',contactTitle:'Ready to build something?',contactSub:'Tell us your idea. We reply fast, with no commitment. The first step is free.',contactCta:'Message us on WhatsApp →'
   }
 };
@@ -504,6 +555,7 @@ function applyLanguage(lang){
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=translations[lang][el.dataset.i18nHtml]||el.innerHTML;});
   document.getElementById('lang-toggle').textContent=lang==='es'?'EN':'ES';
   document.querySelectorAll('.ftab').forEach(btn=>{if(btn.dataset.cat)btn.textContent=categoryLabels[lang][btn.dataset.cat];});
+  document.querySelectorAll('.ftab').forEach(btn=>{if(btn.dataset.pcat)btn.textContent=projCatLabels[lang][btn.dataset.pcat];});
 }
 function toggleLanguage(){currentLang=currentLang==='es'?'en':'es';applyLanguage(currentLang);}
 
@@ -559,6 +611,135 @@ function renderServices(cat){
   });
 }
 renderServices('all');
+
+// PROJECTS (portfolio)
+const projects=[
+  {featured:true,num:'01',mark:'Featured case',live:true,cat:'web',tag:'Web corporativa',meta:'PR',title:'CJ Marine',desc:'Sitio para empresa de servicios marítimos con una identidad sólida, profesional y confiable.',img:'images/logoCj.jpeg',alt:'CJ Marine',link:'https://cjmarine.org/',linkLabel:'cjmarine.org'},
+  {featured:false,num:'02',mark:'Hospitality',live:true,cat:'hospitality',tag:'Airbnb',meta:'Reservas',title:'Las Palmitas',desc:'Landing enfocada en conversión y experiencia visual para una propiedad vacacional.',img:'images/logoPalm.jpg',alt:'Las Palmitas Airbnb',link:'https://laspalmitaspr.to/',linkLabel:'laspalmitaspr.to'},
+  {featured:false,num:'03',mark:'Health',live:true,cat:'salud',tag:'Clínica',meta:'Salud',title:'AEF Primary Care',desc:'Diseño limpio y claro que refuerza confianza, atención y accesibilidad para pacientes.',img:'images/logoAEF.jpg',alt:'AEF Primary Care',link:'https://dradalbertoechevarria.com/',linkLabel:'dradalbertoechevarria.com'},
+  {featured:false,num:'04',mark:'Local business',live:true,cat:'comercio',tag:'Comercio',meta:'Servicios',title:'Mana Gas',desc:'Experiencia directa y funcional para un negocio local que necesita claridad y rapidez.',img:'images/logoMana.jpg',alt:'Mana Gas',link:'https://managas.org/',linkLabel:'managas.org'},
+  {featured:false,num:'05',mark:'SaaS',live:true,cat:'app',tag:'Analítica de mercado',meta:'Plataforma',title:'Nerion',desc:'Plataforma de analítica de mercado en tiempo real: señales, momentum y métricas claras para decisiones informadas.',img:'images/logo-nerion.svg',alt:'Nerion',link:'https://nerion.app/',linkLabel:'nerion.app'},
+  {featured:false,num:'06',mark:'Beauty & Grooming',live:true,cat:'belleza',tag:'Salón unisex',meta:'Isabela, PR',title:'The Secret Spot',desc:'Estudio de grooming unisex con más de 20 años de experiencia: cortes, barbería, color y cuidado facial con atención al detalle.',img:'images/secretSpot.jpg',alt:'The Secret Spot - Ladies & Men\'s Grooming',link:'https://www.ladiesandmengrooming.com/',linkLabel:'ladiesandmengrooming.com'},
+];
+const projCats=[{key:'all',label:'Todos'},{key:'web',label:'Web'},{key:'app',label:'Apps'},{key:'salud',label:'Salud'},{key:'belleza',label:'Belleza'},{key:'hospitality',label:'Hospitality'},{key:'comercio',label:'Comercio'}];
+const projCatLabels={
+  es:{all:'Todos',web:'Web',app:'Apps',salud:'Salud',belleza:'Belleza',hospitality:'Hospitality',comercio:'Comercio'},
+  en:{all:'All',web:'Web',app:'Apps',salud:'Health',belleza:'Beauty',hospitality:'Hospitality',comercio:'Retail'}
+};
+const projTabsEl=document.getElementById('proj-filter-tabs');
+const projGridEl=document.getElementById('projects-grid');
+const projDotsEl=document.getElementById('proj-dots');
+const pointerFine=window.matchMedia('(pointer:fine)').matches;
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const projReveal=new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in-view');projReveal.unobserve(en.target);}});
+},{threshold:0.15});
+
+function initProjTilt(card){
+  if(!pointerFine||reduceMotion)return;
+  const inner=card.querySelector('.proj-tilt');
+  if(!inner)return;
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+    inner.style.transform=`perspective(900px) rotateX(${(0.5-py)*9}deg) rotateY(${(px-0.5)*9}deg) translateY(-8px)`;
+    card.style.setProperty('--mx',(px*100)+'%');
+    card.style.setProperty('--my',(py*100)+'%');
+  });
+  card.addEventListener('mouseleave',()=>{inner.style.transform='';});
+}
+
+projCats.forEach((c,i)=>{
+  const b=document.createElement('button');b.className='ftab'+(i===0?' active':'');b.textContent=c.label;
+  b.dataset.pcat=c.key;
+  b.onclick=()=>{document.querySelectorAll('#proj-filter-tabs .ftab').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderProjects(c.key);};
+  projTabsEl.appendChild(b);
+});
+
+function renderProjects(cat){
+  projGridEl.innerHTML='';
+  const list=projects.filter(p=>cat==='all'||p.cat===cat);
+  list.forEach((p,i)=>{
+    const el=document.createElement('a');
+    el.href=p.link;
+    el.target='_blank';
+    el.rel='noopener noreferrer';
+    el.className='proj-card'+(p.featured?' featured':' compact');
+    el.style.setProperty('--stagger',i);
+    el.innerHTML=`
+      <div class="proj-tilt">
+        <div class="proj-visual">
+          <span class="proj-mark">${p.live?'<span class="live-dot"></span> ':''}${p.mark}</span>
+          <span class="proj-num">${p.num}</span>
+          <div class="proj-img"><img src="${p.img}" alt="${p.alt}" loading="lazy"/></div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-topline"><span class="proj-tag">${p.tag}</span><span class="proj-meta">${p.meta}</span></div>
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <div class="proj-footer"><span class="proj-link">${p.linkLabel}</span><span class="proj-arrow">→</span></div>
+        </div>
+      </div>`;
+    projGridEl.appendChild(el);
+    initProjTilt(el);
+    projReveal.observe(el);
+  });
+  const ctaEl=document.createElement('a');
+  ctaEl.href='https://wa.me/19392312803';
+  ctaEl.target='_blank';
+  ctaEl.rel='noopener noreferrer';
+  ctaEl.className='proj-card compact cta-card';
+  ctaEl.style.setProperty('--stagger',list.length);
+  ctaEl.innerHTML=`
+    <div class="cta-card-inner">
+      <span class="cta-card-icon">+</span>
+      <h3>¿Tu proyecto aquí?</h3>
+      <p>Cuéntanos tu idea y lo llevamos al portafolio.</p>
+      <span class="proj-link">Hablemos →</span>
+    </div>`;
+  projGridEl.appendChild(ctaEl);
+  projReveal.observe(ctaEl);
+
+  buildProjDots(list.length+1);
+}
+
+function buildProjDots(count){
+  projDotsEl.innerHTML='';
+  for(let i=0;i<count;i++){
+    const d=document.createElement('span');d.className='proj-dot'+(i===0?' active':'');
+    projDotsEl.appendChild(d);
+  }
+}
+projGridEl.addEventListener('scroll',()=>{
+  const cards=[...projGridEl.children];
+  if(!cards.length)return;
+  const center=projGridEl.scrollLeft+projGridEl.clientWidth/2;
+  let closest=0,min=Infinity;
+  cards.forEach((c,i)=>{
+    const mid=c.offsetLeft+c.offsetWidth/2;
+    const d=Math.abs(mid-center);
+    if(d<min){min=d;closest=i;}
+  });
+  [...projDotsEl.children].forEach((d,i)=>d.classList.toggle('active',i===closest));
+},{passive:true});
+
+// drag-to-scroll (mouse only; touch keeps native swipe)
+(function enableProjDrag(){
+  let isDown=false,startX=0,startScroll=0;
+  projGridEl.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse')return;
+    isDown=true;startX=e.pageX;startScroll=projGridEl.scrollLeft;
+    projGridEl.classList.add('dragging');projGridEl.setPointerCapture(e.pointerId);
+  });
+  projGridEl.addEventListener('pointermove',e=>{
+    if(!isDown)return;
+    projGridEl.scrollLeft=startScroll-(e.pageX-startX);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>projGridEl.addEventListener(ev,()=>{isDown=false;projGridEl.classList.remove('dragging');}));
+})();
+
+renderProjects('all');
 
 // MOBILE MENU
 function toggleMenu(){document.getElementById('mob-menu').classList.toggle('open');}
