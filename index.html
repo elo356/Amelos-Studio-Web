@@ -86,33 +86,63 @@ nav > :not(.header-canvas){position:relative;z-index:1}
 .filter-tabs{display:flex;gap:0.5rem;flex-wrap:wrap;margin:2.5rem 0 2rem}
 .ftab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.45rem 1.1rem;border-radius:100px;font-size:0.78rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;transition:all 0.2s}
 .ftab.active,.ftab:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
-.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-.scard{background:var(--card);padding:1.5rem;cursor:pointer;transition:background 0.2s;position:relative;overflow:hidden}
-.scard::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:linear-gradient(to bottom,var(--accent),var(--accent2));transition:height 0.3s}
-.scard:hover{background:var(--bg4)}
-.scard:hover::before{height:100%}
-.scard-badge{position:absolute;top:1rem;right:1rem;font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:100px;letter-spacing:0.5px;font-weight:600}
-.badge-new{background:rgba(0,212,170,0.12);color:var(--accent3)}
-.badge-hot{background:rgba(245,158,11,0.12);color:#f59e0b}
-.scard-icon{font-size:1.6rem;margin-bottom:1rem;display:block}
-.scard h3{font-size:0.95rem;font-weight:700;margin-bottom:0.4rem}
-.scard p{color:var(--muted);font-size:0.8rem;line-height:1.65;margin-bottom:1rem;font-weight:400}
-.scard-cta{display:inline-flex;align-items:center;gap:0.3rem;color:var(--accent);font-size:0.75rem;font-weight:600;opacity:0;transition:opacity 0.2s}
-.scard:hover .scard-cta{opacity:1}
+/* SERVICES — pick a category first, so you're never staring at all 23 at once */
+.services-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}
+.scat-tile{--tile-accent:var(--accent);--tile-accent-soft:rgba(108,99,255,0.12);position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.75rem;cursor:pointer;transition:border-color 0.25s,transform 0.25s}
+.scat-tile::before{content:'';position:absolute;inset:0;background:linear-gradient(160deg,var(--tile-accent-soft),transparent 65%);opacity:0;transition:opacity 0.25s}
+.scat-tile:hover{border-color:var(--tile-accent);transform:translateY(-3px)}
+.scat-tile:hover::before{opacity:1}
+.scat-tile-count{position:relative;display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;color:var(--tile-accent);margin-bottom:0.9rem}
+.scat-tile h3{position:relative;font-size:1.25rem;font-weight:800;margin-bottom:0.55rem;letter-spacing:-0.2px}
+.scat-tile p{position:relative;color:var(--muted2);font-size:0.83rem;line-height:1.65}
+.scat-tile-arrow{position:relative;display:inline-flex;align-items:center;gap:0.4rem;margin-top:1.3rem;font-size:0.78rem;font-weight:700;color:var(--tile-accent)}
+.services-detail{display:none}
+.services-wrap.detail-open .services-overview{display:none}
+.services-wrap.detail-open .services-detail{display:block}
+.sdetail-back{background:none;border:0;padding:0;margin-top:2.5rem;color:var(--muted2);font-size:0.85rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;font-family:'Plus Jakarta Sans',sans-serif;transition:color 0.2s}
+.sdetail-back:hover{color:var(--text)}
+.sdetail-head{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;margin:1.4rem 0 0.3rem}
+.sdetail-head h3{font-size:1.5rem;font-weight:800;letter-spacing:-0.3px}
+.sdetail-head p{color:var(--muted2);font-size:0.85rem}
+/* SERVICES — editorial index list (no cards, no icons) */
+.services-list{display:flex;flex-direction:column;border-top:1px solid var(--border);margin-top:0.5rem}
+.srow{--row-accent:var(--accent);--row-accent-soft:rgba(108,99,255,0.12);position:relative;padding:1.4rem 0.5rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.25s}
+.srow:hover{background:var(--row-accent-soft)}
+.srow-head{display:flex;align-items:center;gap:1.4rem}
+.srow-num{font-size:0.85rem;font-weight:700;color:var(--muted);width:1.7rem;flex-shrink:0;font-variant-numeric:tabular-nums;opacity:0.55;transition:color 0.25s,opacity 0.25s}
+.srow:hover .srow-num,.srow.open .srow-num{opacity:1;color:var(--row-accent)}
+.srow-title{flex:1;font-size:clamp(1rem,1.6vw,1.2rem);font-weight:700;letter-spacing:-0.2px;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap}
+.srow-status{font-size:0.6rem;font-weight:700;letter-spacing:0.5px;padding:0.18rem 0.55rem;border-radius:100px;text-transform:uppercase}
+.srow-status.new{background:rgba(0,212,170,0.12);color:var(--accent3)}
+.srow-status.hot{background:var(--row-accent-soft);color:var(--row-accent)}
+.srow-toggle{width:26px;height:26px;border:1px solid var(--border2);border-radius:50%;position:relative;flex-shrink:0;transition:transform 0.3s ease,border-color 0.25s}
+.srow-toggle::before,.srow-toggle::after{content:'';position:absolute;top:50%;left:50%;background:var(--muted2);transition:transform 0.25s ease,background 0.25s}
+.srow-toggle::before{width:9px;height:1.5px;transform:translate(-50%,-50%)}
+.srow-toggle::after{width:1.5px;height:9px;transform:translate(-50%,-50%)}
+.srow:hover .srow-toggle{border-color:var(--row-accent)}
+.srow.open .srow-toggle{transform:rotate(135deg);border-color:var(--row-accent)}
+.srow.open .srow-toggle::before,.srow.open .srow-toggle::after{background:var(--row-accent)}
+.srow-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows 0.35s ease}
+.srow.open .srow-body{grid-template-rows:1fr}
+.srow-body-inner{overflow:hidden}
+.srow-body-inner p{padding:1rem 0 0.2rem calc(1.7rem + 1.4rem);color:var(--muted2);font-size:0.88rem;line-height:1.75;max-width:600px}
+.srow-body-inner a{padding-left:calc(1.7rem + 1.4rem);display:inline-flex;color:var(--row-accent);font-size:0.82rem;font-weight:700;margin-top:0.3rem}
 
 /* AI SECTION */
 .ai-wrap{background:var(--bg);border-top:1px solid var(--border)}
 .ai-inner{max-width:1140px;margin:0 auto;padding:6rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
-.ai-features{display:flex;flex-direction:column;gap:1.25rem;margin-top:2.5rem}
-.ai-feat{display:flex;gap:1rem;align-items:flex-start}
-.ai-feat-icon{width:36px;height:36px;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.ai-feat-text h4{font-size:0.9rem;font-weight:700;margin-bottom:0.2rem}
-.ai-feat-text p{color:var(--muted);font-size:0.8rem;line-height:1.6;font-weight:400}
+.ai-features{display:flex;flex-direction:column;margin-top:2.75rem}
+.ai-feat{position:relative;padding:0 0 1.9rem 1.85rem;border-left:2px solid var(--border)}
+.ai-feat:last-child{border-left-color:transparent;padding-bottom:0}
+.ai-feat::before{content:'';position:absolute;left:-6px;top:0.3rem;width:10px;height:10px;border-radius:50%;background:var(--feat-accent);box-shadow:0 0 0 4px var(--bg),0 0 14px var(--feat-accent-soft)}
+.ai-feat-eyebrow{display:block;font-size:0.68rem;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--feat-accent);margin-bottom:0.4rem}
+.ai-feat h4{font-size:0.98rem;font-weight:700;margin-bottom:0.4rem}
+.ai-feat p{color:var(--muted2);font-size:0.83rem;line-height:1.7;font-weight:400}
 
 /* CHAT WIDGET */
 .ai-phone{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;height:420px}
 .ai-phone-header{display:flex;align-items:center;gap:0.75rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0}
-.ai-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.ai-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;letter-spacing:0.3px;color:#fff;flex-shrink:0}
 .ai-phone-name{font-size:0.88rem;font-weight:700}
 .ai-status{font-size:0.7rem;color:var(--accent3);display:flex;align-items:center;gap:0.3rem;font-weight:500}
 .ai-status::before{content:'';width:5px;height:5px;background:var(--accent3);border-radius:50%;animation:pulse 2s infinite}
@@ -271,6 +301,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   .hamburger{display:flex}
   .why-head{display:block}
   .why-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .services-overview{grid-template-columns:repeat(2,1fr)}
   .projects-grid{display:flex;grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;margin-top:2rem;padding:0.5rem 1.2rem 1rem;margin-inline:-1.2rem;cursor:grab;scrollbar-width:none}
   .projects-grid::-webkit-scrollbar{display:none}
   .projects-grid.dragging{cursor:grabbing;scroll-snap-type:none}
@@ -294,13 +325,15 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
   .proj-card,.proj-card.featured,.proj-card.compact{flex-basis:88%;min-height:360px}
   .proj-visual{height:150px}
   .proj-card.featured .proj-visual{height:170px}
-  .services-grid{grid-template-columns:repeat(2,minmax(0,1fr));border-radius:12px}
-  .scard{padding:1rem;min-height:178px}
-  .scard-badge{top:0.7rem;right:0.7rem;font-size:0.55rem;padding:0.15rem 0.45rem}
-  .scard-icon{font-size:1.35rem;margin-bottom:0.75rem}
-  .scard h3{font-size:0.82rem;line-height:1.25;margin-bottom:0.35rem}
-  .scard p{font-size:0.68rem;line-height:1.45;margin-bottom:0.75rem}
-  .scard-cta{font-size:0.68rem;opacity:1}
+  .services-overview{grid-template-columns:1fr;gap:0.75rem;margin-top:2rem}
+  .scat-tile{padding:1.4rem}
+  .sdetail-back{margin-top:2rem}
+  .srow{padding:1.1rem 0.2rem}
+  .srow-head{flex-wrap:wrap;row-gap:0.5rem}
+  .srow-num{order:1;width:auto}
+  .srow-toggle{order:2;margin-left:auto}
+  .srow-title{order:3;flex-basis:100%;font-size:1rem}
+  .srow-body-inner p,.srow-body-inner a{padding-left:0}
   .promo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0.6rem}
   .promo-feat{padding:1.1rem;border-radius:12px}
   .promo-cd-item{padding:0.6rem 1rem;min-width:64px}
@@ -367,8 +400,15 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
       <p class="section-tag" data-i18n="servicesTag">Servicios</p>
       <h2 class="section-title" data-i18n="servicesTitle">Todo lo que necesitas en un solo estudio</h2>
       <p class="section-sub" data-i18n="servicesSub">Desde tu primera página web hasta sistemas inteligentes con IA.</p>
-      <div class="filter-tabs" id="filter-tabs"></div>
-      <div class="services-grid" id="services-grid"></div>
+      <div class="services-overview" id="services-overview"></div>
+      <div class="services-detail" id="services-detail">
+        <button class="sdetail-back" id="sdetail-back">← Todos los servicios</button>
+        <div class="sdetail-head">
+          <h3 id="sdetail-title"></h3>
+          <p id="sdetail-sub"></p>
+        </div>
+        <div class="services-list" id="services-grid"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -380,17 +420,20 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
       <h2 class="section-title" data-i18n="aiTitle">Tu negocio, trabajando 24/7</h2>
       <p class="section-sub" style="margin-top:0.75rem" data-i18n="aiSub">Los agentes de IA de Amelo Studio atienden clientes, responden dudas y generan ventas - sin que tú tengas que estar presente.</p>
       <div class="ai-features">
-        <div class="ai-feat">
-          <div class="ai-feat-icon">📞</div>
-          <div class="ai-feat-text"><h4>Agente para Llamadas</h4><p>Voz natural con OpenAI. Atiende, agenda y transfiere llamadas automáticamente.</p></div>
+        <div class="ai-feat" style="--feat-accent:var(--accent);--feat-accent-soft:rgba(108,99,255,0.35)">
+          <span class="ai-feat-eyebrow">Llamadas</span>
+          <h4>Agente para Llamadas</h4>
+          <p>Voz natural con OpenAI. Atiende, agenda y transfiere llamadas automáticamente.</p>
         </div>
-        <div class="ai-feat">
-          <div class="ai-feat-icon">💬</div>
-          <div class="ai-feat-text"><h4>Agente para Mensajes</h4><p>Responde WhatsApp, webchat y redes sociales con inteligencia real.</p></div>
+        <div class="ai-feat" style="--feat-accent:var(--accent2);--feat-accent-soft:rgba(255,101,132,0.35)">
+          <span class="ai-feat-eyebrow">Mensajes</span>
+          <h4>Agente para Mensajes</h4>
+          <p>Responde WhatsApp, webchat y redes sociales con inteligencia real.</p>
         </div>
-        <div class="ai-feat">
-          <div class="ai-feat-icon">🧠</div>
-          <div class="ai-feat-text"><h4>Chatbot en tu Web</h4><p>Widget entrenado con la info de tu negocio. Se instala en cualquier sitio.</p></div>
+        <div class="ai-feat" style="--feat-accent:var(--accent3);--feat-accent-soft:rgba(0,212,170,0.35)">
+          <span class="ai-feat-eyebrow">Sitio web</span>
+          <h4>Chatbot en tu Web</h4>
+          <p>Widget entrenado con la info de tu negocio. Se instala en cualquier sitio.</p>
         </div>
       </div>
       <button class="btn-primary" style="margin-top:2rem" data-i18n="aiCta" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Quiero un agente de IA →</button>
@@ -398,20 +441,20 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;display:flex;justi
     <div>
       <div class="ai-phone">
         <div class="ai-phone-header">
-          <div class="ai-avatar">🤖</div>
+          <div class="ai-avatar">AB</div>
           <div>
             <div class="ai-phone-name">AmeloBot</div>
             <div class="ai-status">Activo · en línea</div>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages">
-          <div class="chat-msg bot"><div class="chat-bubble">¡Hola! Soy AmeloBot 👋 ¿En qué te puedo ayudar hoy?</div></div>
+          <div class="chat-msg bot"><div class="chat-bubble">¡Hola! Soy AmeloBot. ¿En qué te puedo ayudar hoy?</div></div>
         </div>
         <div class="quick-replies" id="quick-replies">
           <button class="qr-btn" onclick="sendQuick('¿Qué servicios ofrecen?')">¿Qué servicios ofrecen?</button>
-          <button class="qr-btn" onclick="sendQuick('¿Cuánto cuesta una web?')">💰 Precios</button>
-          <button class="qr-btn" onclick="sendQuick('¿Tienen agentes de IA?')">🤖 Agentes IA</button>
-          <button class="qr-btn" onclick="sendQuick('Quiero contactarlos')">📩 Contacto</button>
+          <button class="qr-btn" onclick="sendQuick('¿Cuánto cuesta una web?')">Precios</button>
+          <button class="qr-btn" onclick="sendQuick('¿Tienen agentes de IA?')">Agentes IA</button>
+          <button class="qr-btn" onclick="sendQuick('Quiero contactarlos')">Contacto</button>
         </div>
         <div class="chat-input-area">
           <input class="chat-input" id="chat-input" type="text" placeholder="Escribe tu pregunta..." maxlength="200"/>
@@ -545,16 +588,11 @@ const translations={
     contactTag:'Contact',contactTitle:'Ready to build something?',contactSub:'Tell us your idea. We reply fast, with no commitment. The first step is free.',contactCta:'Message us on WhatsApp →'
   }
 };
-const categoryLabels={
-  es:{all:'Todos',web:'Web',app:'Apps',ia:'IA',sistemas:'Sistemas',soporte:'Soporte',marketing:'Marketing'},
-  en:{all:'All',web:'Web',app:'Apps',ia:'AI',sistemas:'Systems',soporte:'Support',marketing:'Marketing'}
-};
 function applyLanguage(lang){
   document.documentElement.lang=lang;
   document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=translations[lang][el.dataset.i18n]||el.textContent;});
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=translations[lang][el.dataset.i18nHtml]||el.innerHTML;});
   document.getElementById('lang-toggle').textContent=lang==='es'?'EN':'ES';
-  document.querySelectorAll('.ftab').forEach(btn=>{if(btn.dataset.cat)btn.textContent=categoryLabels[lang][btn.dataset.cat];});
   document.querySelectorAll('.ftab').forEach(btn=>{if(btn.dataset.pcat)btn.textContent=projCatLabels[lang][btn.dataset.pcat];});
 }
 function toggleLanguage(){currentLang=currentLang==='es'?'en':'es';applyLanguage(currentLang);}
@@ -566,51 +604,101 @@ const mq=document.getElementById('mq');
 
 // SERVICES
 const services=[
-  {cat:'web',icon:'🌐',name:'Página Web Básica',desc:'Hasta 4 secciones, responsive y SEO básico.',status:''},
-  {cat:'web',icon:'🏗️',name:'Sitio Multi-página',desc:'Hasta 8 secciones, menú completo y SEO avanzado.',status:''},
-  {cat:'web',icon:'🛒',name:'Tienda Online',desc:'Carrito, pagos online e inventario. WooCommerce o Shopify.',status:'hot'},
-  {cat:'web',icon:'💳',name:'Tarjeta Digital',desc:'Enlace único, QR y diseño profesional.',status:''},
-  {cat:'app',icon:'⚙️',name:'Aplicación Web',desc:'Herramientas y sistemas personalizados para tu negocio.',status:''},
-  {cat:'app',icon:'📱',name:'App Android',desc:'Aplicación nativa para Android con publicación en Play Store.',status:''},
-  {cat:'ia',icon:'🤖',name:'Agente IA para Llamadas',desc:'Voz natural que atiende llamadas 24/7 con OpenAI.',status:'hot'},
-  {cat:'ia',icon:'💬',name:'Agente IA para Mensajes',desc:'Responde WhatsApp, webchat y redes automáticamente.',status:'hot'},
-  {cat:'ia',icon:'🧠',name:'Chatbot IA para tu Web',desc:'Widget inteligente entrenado con el contenido de tu negocio.',status:'new'},
-  {cat:'sistemas',icon:'🏪',name:'Sistema POS',desc:'Cobros, inventario, tickets y caja para tiendas y restaurantes.',status:'hot'},
-  {cat:'sistemas',icon:'📅',name:'Sistema de Citas',desc:'Agenda online para salones, clínicas, coaches y barberías.',status:'hot'},
-  {cat:'sistemas',icon:'🍽️',name:'Sistema para Restaurantes',desc:'Menú digital QR, pedidos por mesa y gestión de cocina.',status:'new'},
-  {cat:'sistemas',icon:'📦',name:'Sistema de Inventario',desc:'Control de stock, alertas y entradas/salidas.',status:'new'},
-  {cat:'sistemas',icon:'👥',name:'CRM / Gestión de Clientes',desc:'Base de clientes, historial y seguimiento de ventas.',status:'new'},
-  {cat:'sistemas',icon:'🏋️',name:'Sistema para Gimnasios',desc:'Membresías, check-in, clases y pagos recurrentes.',status:'new'},
-  {cat:'sistemas',icon:'🧩',name:'Sistema Personalizado',desc:'Creamos herramientas a medida para procesos únicos de tu negocio.',status:'new'},
-  {cat:'sistemas',icon:'🧾',name:'Sistema de Facturación',desc:'Facturas digitales, clientes y reportes automáticos.',status:''},
-  {cat:'soporte',icon:'🗃️',name:'Bases de Datos',desc:'Paneles a medida y datos en tiempo real.',status:''},
-  {cat:'soporte',icon:'🖥️',name:'Hosting Administrado',desc:'Dominio, hosting y mantenimiento incluido.',status:''},
-  {cat:'soporte',icon:'🔐',name:'Mantenimiento y Seguridad',desc:'Updates, backups, SSL y monitoreo de uptime.',status:'new'},
-  {cat:'marketing',icon:'🔍',name:'SEO Avanzado',desc:'Posicionamiento en Google y estrategia de keywords.',status:'new'},
-  {cat:'marketing',icon:'🔷',name:'QR Personalizado',desc:'Con logo y colores de marca para webs y eventos.',status:''},
-  {cat:'marketing',icon:'📧',name:'Email Marketing',desc:'Campañas, newsletters y automatizaciones.',status:'new'},
+  {cat:'web',name:'Página Web Básica',desc:'Hasta 4 secciones, responsive y SEO básico.',status:''},
+  {cat:'web',name:'Sitio Multi-página',desc:'Hasta 8 secciones, menú completo y SEO avanzado.',status:''},
+  {cat:'web',name:'Tienda Online',desc:'Carrito, pagos online e inventario. WooCommerce o Shopify.',status:'hot'},
+  {cat:'web',name:'Tarjeta Digital',desc:'Enlace único, QR y diseño profesional.',status:''},
+  {cat:'app',name:'Aplicación Web',desc:'Herramientas y sistemas personalizados para tu negocio.',status:''},
+  {cat:'app',name:'App Android',desc:'Aplicación nativa para Android con publicación en Play Store.',status:''},
+  {cat:'ia',name:'Agente IA para Llamadas',desc:'Voz natural que atiende llamadas 24/7 con OpenAI.',status:'hot'},
+  {cat:'ia',name:'Agente IA para Mensajes',desc:'Responde WhatsApp, webchat y redes automáticamente.',status:'hot'},
+  {cat:'ia',name:'Chatbot IA para tu Web',desc:'Widget inteligente entrenado con el contenido de tu negocio.',status:'new'},
+  {cat:'sistemas',name:'Sistema POS',desc:'Cobros, inventario, tickets y caja para tiendas y restaurantes.',status:'hot'},
+  {cat:'sistemas',name:'Sistema de Citas',desc:'Agenda online para salones, clínicas, coaches y barberías.',status:'hot'},
+  {cat:'sistemas',name:'Sistema para Restaurantes',desc:'Menú digital QR, pedidos por mesa y gestión de cocina.',status:'new'},
+  {cat:'sistemas',name:'Sistema de Inventario',desc:'Control de stock, alertas y entradas/salidas.',status:'new'},
+  {cat:'sistemas',name:'CRM / Gestión de Clientes',desc:'Base de clientes, historial y seguimiento de ventas.',status:'new'},
+  {cat:'sistemas',name:'Sistema para Gimnasios',desc:'Membresías, check-in, clases y pagos recurrentes.',status:'new'},
+  {cat:'sistemas',name:'Sistema Personalizado',desc:'Creamos herramientas a medida para procesos únicos de tu negocio.',status:'new'},
+  {cat:'sistemas',name:'Sistema de Facturación',desc:'Facturas digitales, clientes y reportes automáticos.',status:''},
+  {cat:'soporte',name:'Bases de Datos',desc:'Paneles a medida y datos en tiempo real.',status:''},
+  {cat:'soporte',name:'Hosting Administrado',desc:'Dominio, hosting y mantenimiento incluido.',status:''},
+  {cat:'soporte',name:'Mantenimiento y Seguridad',desc:'Updates, backups, SSL y monitoreo de uptime.',status:'new'},
+  {cat:'marketing',name:'SEO Avanzado',desc:'Posicionamiento en Google y estrategia de keywords.',status:'new'},
+  {cat:'marketing',name:'QR Personalizado',desc:'Con logo y colores de marca para webs y eventos.',status:''},
+  {cat:'marketing',name:'Email Marketing',desc:'Campañas, newsletters y automatizaciones.',status:'new'},
 ];
-const cats=[{key:'all',label:'Todos'},{key:'web',label:'Web'},{key:'app',label:'Apps'},{key:'ia',label:'IA'},{key:'sistemas',label:'Sistemas'},{key:'soporte',label:'Soporte'},{key:'marketing',label:'Marketing'}];
-const tabsEl=document.getElementById('filter-tabs');
+// one accent color per category, pulled from the same palette used across the site
+const catAccent={
+  web:{c:'#8aa8ff',soft:'rgba(138,168,255,0.13)'},
+  app:{c:'#7cf4d0',soft:'rgba(124,244,208,0.13)'},
+  ia:{c:'#c69bff',soft:'rgba(198,155,255,0.13)'},
+  sistemas:{c:'#ff9f5a',soft:'rgba(255,159,90,0.13)'},
+  soporte:{c:'#50dfff',soft:'rgba(80,223,255,0.13)'},
+  marketing:{c:'#ff6584',soft:'rgba(255,101,132,0.13)'}
+};
+// one line describing what's inside each category, shown on its overview tile
+const catInfo={
+  web:{label:'Web',desc:'Sitios corporativos, tiendas online y tarjetas digitales.'},
+  app:{label:'Apps',desc:'Herramientas y aplicaciones a la medida de tu negocio.'},
+  ia:{label:'IA',desc:'Agentes inteligentes que atienden y venden por ti, 24/7.'},
+  sistemas:{label:'Sistemas',desc:'POS, citas, inventario y CRM para operar sin fricción.'},
+  soporte:{label:'Soporte',desc:'Hosting, seguridad y mantenimiento continuo.'},
+  marketing:{label:'Marketing',desc:'SEO, QR y campañas que te hacen encontrar.'}
+};
+const catOrder=['web','app','ia','sistemas','soporte','marketing'];
+const servicesWrapEl=document.getElementById('servicios');
+const overviewEl=document.getElementById('services-overview');
+const detailTitleEl=document.getElementById('sdetail-title');
+const detailSubEl=document.getElementById('sdetail-sub');
 const gridEl=document.getElementById('services-grid');
-cats.forEach((c,i)=>{
-  const b=document.createElement('button');b.className='ftab'+(i===0?' active':'');b.textContent=c.label;
-  b.dataset.cat=c.key;
-  b.onclick=()=>{document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderServices(c.key);};
-  tabsEl.appendChild(b);
+
+// default view: 6 category tiles, not all 23 services at once — pick a lane, then see its list
+catOrder.forEach(key=>{
+  const info=catInfo[key];
+  const accent=catAccent[key];
+  const count=services.filter(s=>s.cat===key).length;
+  const tile=document.createElement('div');
+  tile.className='scat-tile';
+  tile.style.setProperty('--tile-accent',accent.c);
+  tile.style.setProperty('--tile-accent-soft',accent.soft);
+  tile.innerHTML=`<span class="scat-tile-count">${String(count).padStart(2,'0')} servicios</span><h3>${info.label}</h3><p>${info.desc}</p><span class="scat-tile-arrow">Ver servicios →</span>`;
+  tile.addEventListener('click',()=>openCategory(key));
+  overviewEl.appendChild(tile);
 });
+document.getElementById('sdetail-back').addEventListener('click',()=>servicesWrapEl.classList.remove('detail-open'));
+
+function openCategory(key){
+  detailTitleEl.textContent=catInfo[key].label;
+  detailSubEl.textContent=catInfo[key].desc;
+  renderServices(key);
+  servicesWrapEl.classList.add('detail-open');
+}
+// editorial index list: a flat, scannable list of rows (title only) that expands
+// in place on click to reveal the description — reading a category's services no
+// longer means scanning 23 identical boxes, you skim titles and only open what's relevant.
 function renderServices(cat){
   gridEl.innerHTML='';
-  services.filter(s=>cat==='all'||s.cat===cat).forEach(s=>{
-    const d=document.createElement('div');d.className='scard';
-    let badge='';
-    if(s.status==='new')badge='<span class="scard-badge badge-new">NUEVO</span>';
-    if(s.status==='hot')badge='<span class="scard-badge badge-hot">🔥 POPULAR</span>';
-    d.innerHTML=`${badge}<span class="scard-icon">${s.icon}</span><h3>${s.name}</h3><p>${s.desc}</p><span class="scard-cta">Contáctanos para cotización →</span>`;
-    gridEl.appendChild(d);
+  const accent=catAccent[cat];
+  services.filter(s=>s.cat===cat).forEach((s,i)=>{
+    const row=document.createElement('div');
+    row.className='srow';
+    row.style.setProperty('--row-accent',accent.c);
+    row.style.setProperty('--row-accent-soft',accent.soft);
+    let status='';
+    if(s.status==='new')status='<span class="srow-status new">Nuevo</span>';
+    if(s.status==='hot')status='<span class="srow-status hot">Popular</span>';
+    row.innerHTML=`
+      <div class="srow-head">
+        <span class="srow-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="srow-title">${s.name}${status}</span>
+        <span class="srow-toggle"></span>
+      </div>
+      <div class="srow-body"><div class="srow-body-inner"><p>${s.desc}</p><a href="https://wa.me/19392312803" target="_blank" rel="noopener noreferrer">Cotizar este servicio →</a></div></div>`;
+    row.querySelector('.srow-head').addEventListener('click',()=>row.classList.toggle('open'));
+    gridEl.appendChild(row);
   });
 }
-renderServices('all');
 
 // PROJECTS (portfolio)
 const projects=[
@@ -726,17 +814,46 @@ projGridEl.addEventListener('scroll',()=>{
 
 // drag-to-scroll (mouse only; touch keeps native swipe)
 (function enableProjDrag(){
-  let isDown=false,startX=0,startScroll=0;
+  const DRAG_THRESHOLD=6; // px of movement before this counts as a drag, not a click
+  let isDown=false,dragging=false,startX=0,startScroll=0;
+  function onMove(e){
+    if(!isDown)return;
+    const dx=e.pageX-startX;
+    if(!dragging){
+      if(Math.abs(dx)<DRAG_THRESHOLD)return;
+      dragging=true;
+      projGridEl.classList.add('dragging');
+    }
+    projGridEl.scrollLeft=startScroll-dx;
+  }
+  function onUp(){
+    if(!isDown)return;
+    isDown=false;
+    document.removeEventListener('pointermove',onMove);
+    document.removeEventListener('pointerup',onUp);
+    document.removeEventListener('pointercancel',onUp);
+    if(dragging){
+      projGridEl.classList.remove('dragging');
+      // a real drag just happened: swallow the click it would otherwise fire on whatever
+      // ended up under the cursor, so we don't accidentally navigate mid-swipe. That click
+      // (if any) fires synchronously right after mouseup, so disarm on the next tick instead
+      // of leaving this listening indefinitely for some unrelated later click.
+      const suppressClick=ev=>{ev.preventDefault();ev.stopPropagation();};
+      document.addEventListener('click',suppressClick,{capture:true,once:true});
+      setTimeout(()=>document.removeEventListener('click',suppressClick,true),0);
+    }
+    dragging=false;
+  }
+  // deliberately no setPointerCapture here: it hijacks the click event's target on mouseup
+  // (redirecting it to projGridEl instead of the actual link), which was silently breaking
+  // every project card click. Tracking pointermove/up on document works just as well.
   projGridEl.addEventListener('pointerdown',e=>{
     if(e.pointerType!=='mouse')return;
-    isDown=true;startX=e.pageX;startScroll=projGridEl.scrollLeft;
-    projGridEl.classList.add('dragging');projGridEl.setPointerCapture(e.pointerId);
+    isDown=true;dragging=false;startX=e.pageX;startScroll=projGridEl.scrollLeft;
+    document.addEventListener('pointermove',onMove);
+    document.addEventListener('pointerup',onUp);
+    document.addEventListener('pointercancel',onUp);
   });
-  projGridEl.addEventListener('pointermove',e=>{
-    if(!isDown)return;
-    projGridEl.scrollLeft=startScroll-(e.pageX-startX);
-  });
-  ['pointerup','pointerleave','pointercancel'].forEach(ev=>projGridEl.addEventListener(ev,()=>{isDown=false;projGridEl.classList.remove('dragging');}));
 })();
 
 renderProjects('all');
